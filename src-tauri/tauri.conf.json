@@ -1,0 +1,92 @@
+{
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "devPath": "http://localhost:3000",
+    "distDir": "../dist",
+    "withGlobalTauri": false
+  },
+  "package": {
+    "productName": "WhiteboardProAI",
+    "version": "7.0.1"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "clipboard": {
+        "all": true,
+        "writeText": true,
+        "readText": true
+      },
+      "window": {
+        "all": false,
+        "close": true,
+        "minimize": true,
+        "maximize": true,
+        "unmaximize": true,
+        "show": true,
+        "hide": true,
+        "setFullscreen": true,
+        "startDragging": true
+      },
+      "dialog": {
+        "all": false,
+        "open": true,
+        "save": true
+      },
+      "fs": {
+        "all": false,
+        "readFile": true,
+        "writeFile": false
+      },
+      "path": {
+        "all": true
+      },
+      "shell": {
+        "all": false,
+        "open": true,
+        "execute": false,
+        "sidecar": false
+      }
+    },
+    "bundle": {
+      "active": true,
+      "identifier": "dihemabd.whiteboard-ai",
+      "publisher": "CN=A0215202-1978-4547-B989-BCD810C21B84",
+      "copyright": "Copyright © 2026 dihem abd",
+      "category": "Education",
+      "shortDescription": "Smart Whiteboard Pro - Interactive Educational Whiteboard",
+      "longDescription": "Smart Whiteboard Pro with complete educational tools and lesson recording capabilities",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "targets": ["nsis"],
+      "windows": {
+        "nsis": {
+          "displayLanguageSelector": false
+        },
+        "wix": {
+          "language": "en-US"
+        }
+      }
+    },
+    "security": {
+      "csp": "default-src 'self' 'unsafe-inline' blob: data: https://*.firebaseio.com https://*.googleapis.com; img-src 'self' blob: data: https:;"
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "resizable": true,
+        "decorations": true,
+        "title": "Smart Whiteboard Pro",
+        "width": 1200,
+        "height": 800,
+        "fileDropEnabled": false
+      }
+    ]
+  }
+}

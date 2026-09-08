@@ -1,0 +1,59 @@
+name: "Release Desktop App"
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install Frontend Dependencies
+        run: npm install
+
+      - name: Run Test Suite & Quality Gate
+        run: npm test
+
+      - name: Build Frontend Web Assets
+        run: npm run build
+
+      - name: Build Tauri Desktop Executable (CLI)
+        run: npx @tauri-apps/cli build --verbose
+
+      - name: Upload Windows Standalone EXE & Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: Whiteboard-Windows-Executable
+          path: |
+            src-tauri/target/release/*.exe
+            src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/bundle/nsis/*.exe
+

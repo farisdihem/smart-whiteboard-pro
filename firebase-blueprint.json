@@ -1,0 +1,30 @@
+{
+  "entities": {
+    "License": {
+      "collectionName": "licenses",
+      "description": "Licenses for Whiteboard-AI serial activation bound to a single device",
+      "fields": {
+        "status": {
+          "type": "string",
+          "description": "License status: available, active, disabled",
+          "required": true
+        },
+        "deviceId": {
+          "type": "string",
+          "description": "Unique persistent local installation ID bound to this license",
+          "required": false
+        },
+        "activatedAt": {
+          "type": "timestamp",
+          "description": "Time when the license was first activated",
+          "required": false
+        },
+        "lastSeenAt": {
+          "type": "timestamp",
+          "description": "Time when the license was last verified by the client",
+          "required": false
+        }
+      }
+    }
+  }
+}

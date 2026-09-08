@@ -1,0 +1,44 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /licenses/{licenseCode} {
+      function isAdmin() {
+        return request.auth != null && (
+          request.auth.uid == 'XMzpn4GgVlSdCwAfCwk06GDzYKN2' ||
+          request.auth.token.email == 'abdelatifdihem@gmail.com'
+        );
+      }
+
+      // Public: the client desktop app looks up its own key by exact document ID only
+      allow get: if true;
+      // Listing/querying the whole collection is admin-only (protects customer names/phones/emails)
+      allow list: if isAdmin();
+      // Only the admin dashboard may create or delete license documents
+      allow create, delete: if isAdmin();
+
+      // Updates: the admin dashboard has unrestricted access (create keys, reset HWID, revoke, edit).
+      // The client desktop app is restricted to its narrow self-activation transition only.
+      allow update: if isAdmin() || (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'devices', 'activatedCount', 'lastActivatedAt', 'lastUsedAt', 'status', 'hardwareId',
+            'deviceId', 'activatedAt', 'lastSeenAt', 'customerName', 'licenseKey',
+            'lastVerifiedAt', 'lastHeartbeatAt'
+          ])
+          // Status may only stay the same, or move from an unused state to 'active'
+          && (request.resource.data.status == resource.data.status || (resource.data.status in ['available', 'new', 'unused', 'valid', 'active', null] && request.resource.data.status == 'active'))
+          // Customer name cannot be overwritten by the client once set
+          && (!('customerName' in resource.data) || request.resource.data.customerName == resource.data.customerName)
+          // License key field cannot be altered by the client
+          && (!('licenseKey' in resource.data) || request.resource.data.licenseKey == resource.data.licenseKey)
+          // Device slot ceiling cannot be breached by the client
+          && (!('maxDevices' in resource.data) || !('devices' in request.resource.data) || request.resource.data.devices.size() <= resource.data.maxDevices)
+      );
+    }
+  }
+}

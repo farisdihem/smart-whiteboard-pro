@@ -1,0 +1,26 @@
+[package]
+name = "smart-whiteboard"
+version = "6.6.7"
+description = "برنامج السبورة الذكية"
+authors = ["ديهم عبد اللطيف"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "1.5", features = [] }
+
+[dependencies]
+tauri = { version = "1.5", features = [ "window-set-fullscreen", "window-start-dragging", "clipboard-all", "window-hide", "window-close", "shell-open", "dialog-save", "path-all", "fs-read-file", "dialog-open", "window-unmaximize", "window-maximize", "window-show", "window-minimize", "devtools"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Used only on Windows to auto-grant getUserMedia (camera/microphone) permission
+# requests inside the WebView2-hosted webview; see grant_media_permissions() in
+# main.rs. Pinned to match the exact versions wry/tauri already resolve
+# internally (see Cargo.lock) so the COM/windows-rs types are interchangeable.
+[target.'cfg(windows)'.dependencies]
+webview2-com = "=0.19.1"
+windows = "=0.39.0"
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]

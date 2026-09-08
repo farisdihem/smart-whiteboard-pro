@@ -1,0 +1,26 @@
+src-tauri/target/
+wb8/src-tauri/target/
+node_modules/
+dist/
+build/
+.env
+.env.*
+.DS_Store
+forensic_output/
+forensic_suite_output/
+acceptance_p1_1_a_output/
+*.bak
+
+# Android (Capacitor)
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+android/capacitor-cordova-android-plugins/
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+android/app/src/main/assets/capacitor.plugins.json
+
+# Separate product living in a nested folder — has its own repo, never part of this one
+Class Gradebook/

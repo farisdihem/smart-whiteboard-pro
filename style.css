@@ -1,0 +1,698 @@
+@import 'katex/dist/katex.min.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  overflow: hidden;
+  touch-action: none;
+  font-family: 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.hidden-section { display: none !important; }
+
+canvas {
+  touch-action: none;
+  image-rendering: auto;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+body, canvas, .draggable-item, .math-equation-item, .sticky-note {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.4);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(156, 163, 175, 0.7);
+}
+
+.tool-btn.active {
+  background-color: #dbeafe;
+  color: #2563eb;
+  font-weight: bold;
+}
+.dark .tool-btn.active {
+  background-color: rgba(30, 58, 138, 0.6);
+  color: #60a5fa;
+  font-weight: bold;
+}
+
+/* Draggable Item Base - Pointer events disabled when not in select mode */
+.draggable-item,
+.draggable-item * {
+  pointer-events: none !important;
+  user-select: none;
+  touch-action: none;
+}
+
+/* Math instruments behave like normal draggable items so they don't block drawing */
+/* Control buttons are completely hidden by default */
+.draggable-item .delete-btn,
+.draggable-item .resize-handle,
+.draggable-item .rotate-handle,
+.draggable-item .bake-btn,
+.draggable-item .set-bg-btn {
+  display: none !important;
+}
+
+/* ONLY when Select Tool is Active (#app-container.tool-select) */
+#app-container.tool-select .draggable-item,
+#app-container.tool-select .draggable-item * {
+  pointer-events: auto !important;
+  cursor: move;
+}
+
+/* Selected item styling in Select mode */
+#app-container.tool-select .draggable-item.selected {
+  outline: 2px dashed #3b82f6 !important;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Math instruments: Remove dashed bounding box boundary so radius and drawing are completely free */
+#app-container.tool-select .draggable-item[data-edu-type^="math."].selected,
+.draggable-item[data-edu-type^="math."].selected {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Show delete, resize, rotate, bake, and set-bg buttons ONLY for the selected item */
+#app-container.tool-select .draggable-item.selected .delete-btn,
+#app-container.tool-select .draggable-item.selected .resize-handle,
+#app-container.tool-select .draggable-item.selected .rotate-handle,
+#app-container.tool-select .draggable-item.selected .bake-btn,
+#app-container.tool-select .draggable-item.selected .set-bg-btn {
+  display: flex !important;
+}
+
+/* For math instruments specifically, hide default delete, resize, rotate, bake, and set-bg handles to use our custom math handles */
+#app-container.tool-select .draggable-item[data-edu-type^="math."] .delete-btn,
+#app-container.tool-select .draggable-item[data-edu-type^="math."] .resize-handle,
+#app-container.tool-select .draggable-item[data-edu-type^="math."] .rotate-handle,
+#app-container.tool-select .draggable-item[data-edu-type^="math."] .bake-btn,
+#app-container.tool-select .draggable-item[data-edu-type^="math."] .set-bg-btn,
+.draggable-item[data-edu-type^="math."] .delete-btn,
+.draggable-item[data-edu-type^="math."] .resize-handle,
+.draggable-item[data-edu-type^="math."] .rotate-handle,
+.draggable-item[data-edu-type^="math."] .bake-btn,
+.draggable-item[data-edu-type^="math."] .set-bg-btn {
+  display: none !important;
+}
+
+/* Button styling for controls */
+.delete-btn {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  background-color: #ef4444;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  border-radius: 9999px;
+  cursor: pointer;
+  z-index: 60;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+.delete-btn:hover {
+  background-color: #dc2626;
+  transform: scale(1.15);
+}
+
+.resize-handle {
+  position: absolute;
+  bottom: -12px;
+  right: -12px;
+  width: 24px;
+  height: 24px;
+  background-color: #3b82f6;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  border-radius: 9999px;
+  cursor: nwse-resize;
+  z-index: 60;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+.resize-handle:hover {
+  background-color: #2563eb;
+  transform: scale(1.15);
+}
+
+.rotate-handle {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 26px;
+  background-color: #10b981;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  border-radius: 9999px;
+  cursor: grab;
+  z-index: 60;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+.rotate-handle:hover {
+  background-color: #059669;
+  transform: translateX(-50%) scale(1.15);
+}
+.rotate-handle:active {
+  cursor: grabbing;
+}
+
+.bake-btn {
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  width: 24px;
+  height: 24px;
+  background-color: #f59e0b;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  border-radius: 9999px;
+  cursor: pointer;
+  z-index: 60;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+.bake-btn:hover {
+  background-color: #d97706;
+  transform: scale(1.15);
+}
+
+.set-bg-btn {
+  position: absolute;
+  bottom: -12px;
+  left: -12px;
+  width: 24px;
+  height: 24px;
+  background-color: #6366f1;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  border-radius: 9999px;
+  cursor: pointer;
+  z-index: 60;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+.set-bg-btn:hover {
+  background-color: #4f46e5;
+  transform: scale(1.15);
+}
+
+.tb-div {
+  height: 1px;
+  background: currentColor;
+  opacity: 0.12;
+  margin: 3px 4px;
+}
+
+/* Toast Notification Animation */
+.toast-enter {
+  animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+/* Custom Color Input */
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+/* Sticky Note Style */
+.sticky-note {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.sticky-note:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Custom Math Instrument DOM Handles */
+.math-handle {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  display: none; /* hidden unless selected */
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%); /* center exactly */
+  z-index: 100;
+  cursor: grab;
+  touch-action: none;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+/* Touch & Pen hitbox expander (minimum 40px interactive hit area) */
+.math-handle::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border-radius: 9999px;
+}
+
+.draggable-item[data-edu-type^="math."].selected .math-handle {
+  display: flex !important;
+}
+
+.math-handle:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+}
+
+.math-handle:active {
+  cursor: grabbing;
+}
+
+.math-handle-blue {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+.math-handle-green {
+  background-color: #10b981;
+  color: #ffffff;
+}
+.math-handle-red {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+.math-handle-teal {
+  background-color: #0d9488;
+  color: #ffffff;
+}
+.math-handle-sky {
+  background-color: #0284c7;
+  color: #ffffff;
+}
+.math-handle-amber {
+  background-color: #f59e0b;
+  color: #ffffff;
+}
+
+#math-context-toolbar button {
+  touch-action: manipulation;
+  transition: all 0.15s ease;
+}
+#math-context-toolbar button:active {
+  transform: scale(0.94);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TOOLBAR: DYNAMIC 2D PLACEMENT, ROTATION (HORIZONTAL/VERTICAL) & FOLDING
+   ══════════════════════════════════════════════════════════════ */
+#toolbar {
+  user-select: none;
+  touch-action: none;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.4) transparent;
+}
+
+#toolbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+#toolbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.35);
+  border-radius: 4px;
+}
+
+/* Vertical Mode (Default) */
+#toolbar.tb-vertical {
+  flex-direction: column !important;
+  width: 68px !important;
+  max-width: 68px !important;
+  max-height: 88vh !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+#toolbar.tb-vertical #toolbar-header {
+  flex-direction: column !important;
+  width: 100% !important;
+  border-bottom: 1px solid rgba(156, 163, 175, 0.25) !important;
+  border-left: none !important;
+  padding-bottom: 4px !important;
+  margin-bottom: 2px !important;
+}
+
+#toolbar.tb-vertical #toolbar-header-btns {
+  flex-direction: row !important;
+  gap: 2px !important;
+}
+
+#toolbar.tb-vertical #toolbar-content {
+  flex-direction: column !important;
+  width: 100% !important;
+}
+
+/* Horizontal Mode (ثني الشريط ليمتد على عرض الشاشة) */
+#toolbar.tb-horizontal {
+  flex-direction: row !important;
+  align-items: center !important;
+  width: auto !important;
+  max-width: 95vw !important;
+  height: 68px !important;
+  max-height: 68px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  padding: 4px 8px !important;
+  gap: 4px !important;
+}
+
+#toolbar.tb-horizontal #toolbar-header {
+  flex-direction: row !important;
+  align-items: center !important;
+  border-bottom: none !important;
+  border-left: 1px solid rgba(156, 163, 175, 0.25) !important;
+  padding-bottom: 0 !important;
+  padding-left: 6px !important;
+  margin-left: 2px !important;
+  gap: 4px !important;
+}
+
+#toolbar.tb-horizontal #toolbar-drag {
+  width: auto !important;
+  padding: 6px 4px !important;
+}
+
+#toolbar.tb-horizontal #toolbar-header-btns {
+  flex-direction: column !important;
+  gap: 2px !important;
+  width: auto !important;
+}
+
+#toolbar.tb-horizontal #toolbar-content {
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 4px !important;
+  width: auto !important;
+  height: 100% !important;
+  flex-wrap: nowrap !important;
+}
+
+#toolbar.tb-horizontal .tb-div {
+  width: 1px !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  background: currentColor !important;
+  opacity: 0.18 !important;
+  margin: 0 8px !important;
+  flex-shrink: 0 !important;
+}
+
+#toolbar.tb-horizontal .tool-btn,
+#toolbar.tb-horizontal button:not(.color-btn) {
+  flex-shrink: 0 !important;
+  min-width: 42px !important;
+  white-space: nowrap !important;
+}
+
+#toolbar.tb-horizontal #pen-group,
+#toolbar.tb-horizontal #shapes3d-group,
+#toolbar.tb-horizontal #teacher-group,
+#toolbar.tb-horizontal #physics-group,
+#toolbar.tb-horizontal #chem-group,
+#toolbar.tb-horizontal #bio-group,
+#toolbar.tb-horizontal #geo-group,
+#toolbar.tb-horizontal #astro-group {
+  width: auto !important;
+  flex-shrink: 0 !important;
+  position: relative !important;
+}
+
+/* Circular Color Palette & Simple Controls */
+#colors-group {
+  user-select: none;
+  width: 100%;
+}
+
+#color-picker {
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.color-btn,
+#color-picker .color-btn {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  max-width: 18px !important;
+  min-height: 18px !important;
+  max-height: 18px !important;
+  padding: 0 !important;
+  margin: 0 auto !important;
+  box-sizing: border-box !important;
+  border-radius: 9999px !important;
+  flex-shrink: 0 !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+#color-picker .color-btn:hover {
+  transform: scale(1.18);
+}
+
+#color-picker .color-btn.active-color,
+#color-picker .color-btn[data-active="true"] {
+  transform: scale(1.22) !important;
+  box-shadow: 0 0 0 2px #3b82f6, 0 2px 6px rgba(59, 130, 246, 0.35) !important;
+  border-color: #ffffff !important;
+}
+
+.dark #color-picker .color-btn.active-color,
+.dark #color-picker .color-btn[data-active="true"] {
+  box-shadow: 0 0 0 2px #60a5fa, 0 2px 6px rgba(96, 165, 250, 0.4) !important;
+  border-color: #1f2937 !important;
+}
+
+#custom-color-btn {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  max-width: 18px !important;
+  min-height: 18px !important;
+  max-height: 18px !important;
+  border-radius: 9999px !important;
+  flex-shrink: 0 !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+#custom-color-btn:hover {
+  transform: scale(1.18);
+}
+
+#custom-color-btn.active-color,
+#custom-color-btn[data-active="true"] {
+  transform: scale(1.22) !important;
+  box-shadow: 0 0 0 2px #3b82f6, 0 2px 6px rgba(59, 130, 246, 0.35) !important;
+}
+
+.dark #custom-color-btn.active-color,
+.dark #custom-color-btn[data-active="true"] {
+  box-shadow: 0 0 0 2px #60a5fa, 0 2px 6px rgba(96, 165, 250, 0.4) !important;
+}
+
+#sw-range-container {
+  user-select: none;
+  width: 100%;
+}
+
+/* Horizontal Toolbar Adaptations */
+#toolbar.tb-horizontal #colors-group {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 6px !important;
+  width: auto !important;
+  min-width: auto !important;
+  flex-shrink: 0 !important;
+  margin: 0 4px !important;
+}
+
+#toolbar.tb-horizontal #color-picker {
+  display: grid !important;
+  grid-template-columns: repeat(4, 18px) !important;
+  grid-template-rows: repeat(2, 18px) !important;
+  gap: 3px !important;
+  padding: 0 !important;
+  width: 81px !important;
+  min-width: 81px !important;
+  max-width: 81px !important;
+  flex-shrink: 0 !important;
+}
+
+#toolbar.tb-horizontal .color-btn {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  max-width: 18px !important;
+  min-height: 18px !important;
+  max-height: 18px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 9999px !important;
+  flex-shrink: 0 !important;
+}
+
+#toolbar.tb-horizontal #custom-color-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 18px !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  flex-shrink: 0 !important;
+  padding: 0 !important;
+}
+
+#toolbar.tb-horizontal #custom-color-btn {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  max-width: 18px !important;
+  min-height: 18px !important;
+  max-height: 18px !important;
+  border-radius: 9999px !important;
+  flex-shrink: 0 !important;
+}
+
+#toolbar.tb-horizontal #sw-range-container {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  width: 86px !important;
+  min-width: 86px !important;
+  max-width: 86px !important;
+  flex-shrink: 0 !important;
+  padding: 0 4px !important;
+  margin: 0 4px !important;
+}
+
+#toolbar.tb-horizontal #sw-range {
+  width: 100% !important;
+}
+
+/* Pen Dropdown Popover */
+#pen-dropdown {
+  box-shadow: 0 20px 35px -8px rgba(0, 0, 0, 0.22), 0 10px 15px -6px rgba(0, 0, 0, 0.12) !important;
+}
+
+#pen-dropdown .pen-select-btn.active,
+#pen-dropdown .pen-select-btn[data-selected="true"] {
+  border-color: #3b82f6 !important;
+  background-color: rgba(59, 130, 246, 0.08) !important;
+}
+
+.dark #pen-dropdown .pen-select-btn.active,
+.dark #pen-dropdown .pen-select-btn[data-selected="true"] {
+  border-color: #60a5fa !important;
+  background-color: rgba(59, 130, 246, 0.2) !important;
+}
+
+/* Draggable Pages & Zoom Bar */
+#pages-bar {
+  touch-action: none;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, opacity 0.2s ease;
+  user-select: none;
+}
+
+#pages-bar.is-dragging {
+  cursor: grabbing !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
+  transition: none !important;
+}
+
+#pages-bar-drag {
+  cursor: grab;
+  touch-action: none;
+}
+
+#pages-bar.is-dragging #pages-bar-drag {
+  cursor: grabbing !important;
+}
+
+/* Collapsed / Folded State */
+#toolbar.tb-collapsed {
+  overflow: hidden !important;
+  padding: 4px 6px !important;
+  width: auto !important;
+  height: auto !important;
+  max-width: unset !important;
+  max-height: unset !important;
+  min-width: unset !important;
+  border-radius: 1rem !important;
+}
+
+#toolbar.tb-collapsed #toolbar-header {
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  gap: 4px !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LICENSE SECURITY LOCK BARRIER
+   ══════════════════════════════════════════════════════════════ */
+body.app-locked-unlicensed #main-canvas,
+body.app-locked-unlicensed #event-catcher,
+body.app-locked-unlicensed #toolbar,
+body.app-locked-unlicensed #sidebar,
+body.app-locked-unlicensed #pages-bar,
+body.app-locked-unlicensed #bottom-bar,
+body.app-locked-unlicensed .tool-btn,
+body.app-locked-unlicensed .draggable-item,
+body.app-locked-unlicensed #color-palette {
+  pointer-events: none !important;
+  user-select: none !important;
+  filter: blur(5px) grayscale(40%);
+  opacity: 0.18 !important;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+

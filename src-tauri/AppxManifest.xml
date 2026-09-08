@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+         xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+         xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities">
+  <Identity Name="dihemabd.whiteboard-ai"
+            Publisher="CN=A0215202-1978-4547-B989-BCD810C21B84"
+            Version="6.6.7.0"
+            ProcessorArchitecture="x64" />
+  <Properties>
+    <DisplayName>السبورة الذكية Pro - Whiteboard Pro AI</DisplayName>
+    <PublisherDisplayName>dihem abd</PublisherDisplayName>
+    <Logo>icons\StoreLogo.png</Logo>
+    <Description>برنامج السبورة الذكية التفاعلية مع أدوات تعليمية متكاملة وتسجيل دروس بالصوت والصورة.</Description>
+  </Properties>
+  <Resources>
+    <Resource Language="ar" />
+    <Resource Language="en-US" />
+    <Resource Language="fr" />
+  </Resources>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.22621.0" />
+  </Dependencies>
+  <Applications>
+    <Application Id="App" Executable="WhiteboardProAI.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="السبورة الذكية Pro"
+                          Description="السبورة الذكية التفاعلية"
+                          BackgroundColor="#3b82f6"
+                          Square150x150Logo="icons\Square150x150Logo.png"
+                          Square44x44Logo="icons\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="icons\Square310x310Logo.png"
+                         Square310x310Logo="icons\Square310x310Logo.png"
+                         Square71x71Logo="icons\Square71x71Logo.png">
+          <uap:ShowNameOnTiles>
+            <uap:ShowOn Tile="square150x150Logo" />
+            <uap:ShowOn Tile="wide310x150Logo" />
+            <uap:ShowOn Tile="square310x310Logo" />
+          </uap:ShowNameOnTiles>
+        </uap:DefaultTile>
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

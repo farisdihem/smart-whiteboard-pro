@@ -1,0 +1,48 @@
+{
+  "name": "smart-whiteboard",
+  "productName": "Smart Whiteboard Pro",
+  "version": "7.0.1",
+  "description": "Smart Whiteboard Pro - Interactive Educational Whiteboard Application",
+  "author": "Dihem Abdellatif",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "vite build",
+    "build:icon": "node generate-clean-ico.js",
+    "preview": "vite preview",
+    "test": "node tests/unit.test.mjs",
+    "tauri": "tauri",
+    "android:sync": "npm run build && npx cap sync android",
+    "android:open": "npx cap open android",
+    "android:assets": "npx capacitor-assets generate --android",
+    "android:build": "npm run android:sync && node scripts/android-build.js assembleDebug",
+    "android:build:release": "npm run android:sync && node scripts/android-build.js assembleRelease",
+    "android:run": "npm run android:sync && npx cap run android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.1",
+    "@capacitor/app": "^8.1.1",
+    "@capacitor/core": "^8.5.1",
+    "@capacitor/filesystem": "^8.1.3",
+    "@capacitor/share": "^8.0.1",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.3",
+    "@tauri-apps/api": "^1.5.3",
+    "firebase": "^12.17.1",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
+    "katex": "^0.18.1",
+    "lucide": "^1.28.0",
+    "pdfjs-dist": "3.4.120"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.1",
+    "@tauri-apps/cli": "^1.5.11",
+    "autoprefixer": "^10.5.5",
+    "playwright": "^1.62.1",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^3.4.19",
+    "vite": "^4.4.5"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "version": "7.0.1.0",
+  "minRequiredVersion": "5.0.0.0",
+  "releaseDate": "2026-09-08",
+  "title": "تحديث السبورة الذكية 7.0.1.0 Pro Edition",
+  "changelog": [
+    "إصلاح بقاء الصور بعد مسح السبورة أو الانتقال بين الصفحات",
+    "إصلاح تعارض السحب الذي كان يمنع الكتابة بالقلم مباشرة فوق الصور المُدرجة",
+    "أي عنصر جديد (صورة، أداة علمية، نص، ملاحظة لاصقة) يظهر محدداً تلقائياً فور إدراجه"
+  ],
+  "storeId": "9PFL6KSV2V57",
+  "storeDeepLink": "ms-windows-store://pdp/?productid=9PFL6KSV2V57",
+  "webStoreUrl": "https://apps.microsoft.com/detail/9PFL6KSV2V57",
+  "downloadUrl": "https://apps.microsoft.com/detail/9PFL6KSV2V57"
+}

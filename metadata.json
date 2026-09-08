@@ -1,0 +1,12 @@
+{
+  "name": "Smart Whiteboard Pro",
+  "description": "Interactive educational whiteboard application with digital drawing tools, scientific instruments, mathematical formula editor, and screen recording.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "display-capture"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

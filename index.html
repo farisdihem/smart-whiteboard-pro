@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>السبورة الذكية Pro - Whiteboard Pro AI</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#3b82f6">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https://*.firebaseio.com https://*.googleapis.com wss://*.firebaseio.com; img-src 'self' blob: data: https:; font-src 'self' data: https:; media-src 'self' blob: data:; object-src 'none';">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 font-sans overflow-hidden">
+
+  <!-- Activation & License Key Modal (Luminous White with Black & Blue Accents) -->
+  <div id="activation-modal" class="fixed inset-0 bg-slate-950/50 backdrop-blur-2xl z-[100] hidden items-center justify-center p-4 transition-all duration-300" dir="rtl">
+    <div class="relative bg-white/95 dark:bg-slate-900/95 backdrop-blur-3xl rounded-[36px] shadow-[0_30px_90px_-20px_rgba(0,0,0,0.15),0_10px_35px_rgba(37,99,235,0.08)] border border-slate-200/90 dark:border-slate-800 w-full max-w-[440px] p-7 sm:p-8 overflow-hidden transform transition-all text-center select-none">
+      
+      <!-- Subtle Ambient Atmospheric Glows (Blue & Neutral) -->
+      <div class="absolute -top-20 -right-20 w-44 h-44 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-20 -left-20 w-44 h-44 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Minimalist Header & Glowing Icon -->
+      <div class="relative flex flex-col items-center gap-3 mb-6">
+        <!-- Floating Glassmorphic Icon (White, Black & Blue) -->
+        <div class="w-16 h-16 rounded-[24px] bg-blue-50/90 dark:bg-blue-950/50 border border-blue-200/80 dark:border-blue-800/60 backdrop-blur-xl flex items-center justify-center shadow-md shadow-blue-900/5 text-blue-600 dark:text-blue-400">
+          <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="4" ry="4"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            <circle cx="12" cy="16" r="1.5"/>
+          </svg>
+        </div>
+
+        <div class="space-y-1">
+          <h2 class="text-xl font-black text-slate-950 dark:text-white tracking-tight">
+            تفعيل السبورة الذكية Pro
+          </h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-normal">
+            مرحباً بك! أدخل رمز التفعيل لبدء استخدام السبورة
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Input Field with Quick Paste Action -->
+      <div class="flex flex-col gap-2 mb-4 text-right">
+        <div class="flex items-center justify-between px-1">
+          <label for="activation-key-input" class="text-xs font-semibold text-slate-800 dark:text-slate-200">
+            رمز التفعيل
+          </label>
+          <button id="btn-paste-key" type="button" class="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 py-0.5 px-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-colors flex items-center gap-1 cursor-pointer" title="لصق الرمز من الحافظة">
+            <i data-lucide="clipboard" class="w-3.5 h-3.5"></i>
+            <span>لصق من الحافظة</span>
+          </button>
+        </div>
+
+        <div class="relative group">
+          <input type="text" id="activation-key-input" placeholder="WB-XXXX-XXXX-XXXX" dir="ltr" spellcheck="false" autocomplete="off"
+            class="w-full px-5 py-3.5 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-950 dark:text-slate-100 font-mono text-center tracking-[0.18em] text-base focus:border-blue-600 dark:focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-blue-500/15 outline-none uppercase font-bold transition-all shadow-inner placeholder:tracking-normal placeholder:font-sans placeholder:text-xs placeholder:text-slate-400">
+          <div id="activation-key-valid-icon" class="hidden absolute left-4 top-1/2 -translate-y-1/2 text-blue-600 dark:text-blue-400">
+            <i data-lucide="check" class="w-5 h-5"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error & Status Alerts -->
+      <div id="activation-error-msg" class="hidden mb-3 text-xs text-rose-700 dark:text-rose-300 font-medium bg-rose-50/90 dark:bg-rose-950/50 p-3 rounded-2xl border border-rose-200/80 dark:border-rose-900/60 flex items-center gap-2 text-right">
+        <i data-lucide="alert-circle" class="w-4 h-4 text-rose-500 flex-shrink-0"></i>
+        <span id="activation-error-text" class="flex-1"></span>
+      </div>
+
+      <div class="text-center min-h-[20px] mb-3">
+        <span id="activation-status-text" class="text-xs font-semibold transition-all"></span>
+      </div>
+
+      <!-- Activation Action Button (Blue & Touch of Black) -->
+      <button id="btn-activate-now" type="button" class="w-full py-3.5 px-6 bg-gradient-to-r from-blue-600 via-blue-700 to-slate-900 hover:from-blue-500 hover:to-slate-800 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-900/20 hover:shadow-blue-900/30 flex items-center justify-center gap-2 text-sm cursor-pointer active:scale-[0.99]">
+        <i data-lucide="sparkles" class="w-4 h-4"></i>
+        <span id="btn-activate-text">تفعيل ومتابعة</span>
+      </button>
+
+      <!-- Minimalist Clean Footer -->
+      <div class="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
+        <button id="btn-exit-modal" type="button" class="text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 font-medium py-1 px-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1.5 cursor-pointer">
+          <i data-lucide="power" class="w-3.5 h-3.5"></i>
+          <span>إغلاق البرنامج</span>
+        </button>
+
+        <button id="btn-cancel-activation" type="button" class="hidden text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 font-medium py-1 px-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer">
+          <span>العودة للسبورة</span>
+        </button>
+
+        <p class="text-[11px] text-slate-400 dark:text-slate-500">
+          لطلب الرمز: <span class="font-semibold text-slate-800 dark:text-slate-200">الأستاذ ديهم عبد اللطيف</span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Security Barrier Lock Curtain -->
+  <div id="license-security-curtain" class="fixed inset-0 bg-slate-950/80 backdrop-blur-xl z-[95] hidden items-center justify-center p-6 text-center select-none" dir="rtl">
+    <div class="max-w-md w-full bg-white/95 dark:bg-slate-900/95 border border-slate-200/80 dark:border-slate-800 backdrop-blur-2xl rounded-3xl p-8 flex flex-col items-center gap-4 text-slate-900 dark:text-white shadow-2xl">
+      <div class="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/60 flex items-center justify-center text-blue-600 dark:text-blue-400 shadow-inner">
+        <i data-lucide="lock" class="w-8 h-8"></i>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold mb-1">السبورة مقفلة</h3>
+        <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed max-w-sm mx-auto">
+          يرجى إدخال رمز التفعيل للبدء في استخدام السبورة.
+        </p>
+      </div>
+      <div class="flex items-center gap-3 mt-2 w-full">
+        <button id="btn-reopen-activation" type="button" class="flex-1 py-2.5 px-4 bg-gradient-to-r from-blue-600 to-slate-900 hover:from-blue-500 hover:to-slate-800 text-white rounded-xl font-bold text-xs shadow-lg shadow-blue-900/20 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+          <i data-lucide="key-round" class="w-4 h-4"></i>
+          <span>إدخال رمز التفعيل</span>
+        </button>
+        <button id="btn-curtain-exit" type="button" class="py-2.5 px-4 bg-slate-800 hover:bg-rose-900/40 text-slate-300 hover:text-rose-300 border border-slate-700 rounded-xl font-semibold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+          <i data-lucide="power" class="w-4 h-4"></i>
+          <span>إغلاق البرنامج</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Welcome Modal -->
+  <div class='fixed inset-0 z-[100] hidden items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-300' dir='rtl' id='welcome-modal'>
+    <div class='bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-[92%] max-w-2xl overflow-hidden border border-gray-200 dark:border-gray-700'>
+      <div class='bg-gray-100 dark:bg-gray-900 px-4 py-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-700'>
+        <div class='text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center gap-2'>
+          <i data-lucide="award" class="w-4 h-4 text-blue-500"></i>
+          السبورة الذكية Pro — الإصدار التعليمي v6.6.7
+        </div>
+        <div class='flex items-center gap-1.5' dir="ltr">
+          <div class='w-3 h-3 rounded-full bg-red-500'></div>
+          <div class='w-3 h-3 rounded-full bg-yellow-500'></div>
+          <div class='w-3 h-3 rounded-full bg-green-500'></div>
+        </div>
+      </div>
+      <div class='p-6 md:p-8 text-right'>
+        <h2 class='text-2xl font-bold mb-2 text-gray-800 dark:text-white'>مرحباً بك في السبورة الذكية Pro! 🎓</h2>
+        <p class='text-gray-600 dark:text-gray-300 mb-5 leading-relaxed text-sm'>البيئة الرقمية التفاعلية المتكاملة للأساتذة والمحاضرين. رسم سلس بالقلم، أدوات المواد العلمية التفاعلية (رياضيات، فيزياء، كيمياء، أحياء، جغرافيا وفلك)، وتسجيل الدروس فيديو وصوت.</p>
+        <div class='grid grid-cols-2 gap-3 mb-5'>
+          <div class='flex items-start gap-2.5 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl'>
+            <div class='p-1.5 bg-blue-100 dark:bg-blue-900/50 rounded-lg text-blue-600 dark:text-blue-400 shrink-0'><i class='w-4 h-4' data-lucide='pen-tool'></i></div>
+            <div><h3 class='font-bold text-xs text-gray-800 dark:text-gray-100'>رسم سريع وسلس</h3><p class='text-[11px] text-gray-500 dark:text-gray-400'>استجابة فورية للقلم الرقمي واللمس</p></div>
+          </div>
+          <div class='flex items-start gap-2.5 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl'>
+            <div class='p-1.5 bg-purple-100 dark:bg-purple-900/50 rounded-lg text-purple-600 dark:text-purple-400 shrink-0'><i class='w-4 h-4' data-lucide='video'></i></div>
+            <div><h3 class='font-bold text-xs text-gray-800 dark:text-gray-100'>تسجيل الدروس</h3><p class='text-[11px] text-gray-500 dark:text-gray-400'>تسجيل فيديو وصوت بجودة عالية</p></div>
+          </div>
+          <div class='flex items-start gap-2.5 p-3 bg-green-50 dark:bg-green-900/20 rounded-xl'>
+            <div class='p-1.5 bg-green-100 dark:bg-green-900/50 rounded-lg text-green-600 dark:text-green-400 shrink-0'><i class='w-4 h-4' data-lucide='calculator'></i></div>
+            <div><h3 class='font-bold text-xs text-gray-800 dark:text-gray-100'>أدوات المواد العلمية</h3><p class='text-[11px] text-gray-500 dark:text-gray-400'>مجسمات 3D، فيزياء، كيمياء، أحياء وفلك</p></div>
+          </div>
+          <div class='flex items-start gap-2.5 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-xl'>
+            <div class='p-1.5 bg-orange-100 dark:bg-orange-900/50 rounded-lg text-orange-600 dark:text-orange-400 shrink-0'><i class='w-4 h-4' data-lucide='sparkles'></i></div>
+            <div><h3 class='font-bold text-xs text-gray-800 dark:text-gray-100'>تصدير PDF وصور</h3><p class='text-[11px] text-gray-500 dark:text-gray-400'>تصدير فوري لكافة الصفحات والشرائح</p></div>
+          </div>
+        </div>
+        <div class='flex justify-start'>
+          <button class='bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-xl font-bold transition-all hover:shadow-lg flex items-center gap-2 cursor-pointer' id='btn-start'>
+            <span>ابدأ الآن</span><i class='w-4 h-4' data-lucide='arrow-left'></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Container -->
+  <div class='relative w-full h-screen overflow-hidden select-none' id='app-container'>
+    <div class='absolute' id='pan-container' style='left:50%;top:50%;transform:translate(0px,0px)'>
+      <canvas class='absolute inset-0 pointer-events-none' id='bg-canvas'></canvas>
+      <canvas class='absolute inset-0 pointer-events-none' id='img-canvas'></canvas>
+      <canvas class='absolute inset-0 touch-none' id='main-canvas' style='cursor:crosshair'></canvas>
+      <canvas class='absolute inset-0 pointer-events-none z-40' id='draft-canvas'></canvas>
+      <div class='absolute inset-0 pointer-events-none' id='overlays'></div>
+      <div class='absolute hidden z-50' id='input-container' style='transform:translate(0,-50%)'>
+        <textarea class='bg-transparent border-2 border-blue-500 rounded-lg p-2 outline-none resize-none overflow-hidden min-w-[200px] text-lg' dir='ltr' id='text-input' rows='1'></textarea>
+      </div>
+    </div>
+
+    <!-- Floating Window & Scaling Controls Pill Bar (Top Right) — hidden now that the
+         native OS title bar (decorations:true) already provides minimize/maximize/close/drag -->
+    <div id="window-controls-bar" class="hidden fixed top-4 right-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-xl rounded-full px-3 py-1.5 items-center gap-1.5 border border-gray-200 dark:border-gray-800 z-50 select-none" dir="ltr">
+      <!-- Minimize / Scaling (التحجيم والتصغير) -->
+      <button class="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300 cursor-pointer transition-colors" id="btn-win-minimize" title="تصغير / تحجيم النافذة">
+        <i class="w-4 h-4" data-lucide="minus"></i>
+      </button>
+
+      <!-- Maximize / Fullscreen (التكبير وملء الشاشة) -->
+      <button class="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300 cursor-pointer transition-colors" id="btn-win-maximize" title="تكبير / استعادة الحجم">
+        <i class="w-4 h-4" data-lucide="square" id="win-maximize-icon"></i>
+      </button>
+
+      <!-- Divider -->
+      <div class="w-px h-4 bg-gray-300 dark:bg-gray-700 mx-0.5"></div>
+
+      <!-- Close / Exit (الخروج والإغلاق) -->
+      <button class="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-full text-red-500 cursor-pointer transition-colors" id="btn-win-close" title="إغلاق / خروج">
+        <i class="w-4 h-4" data-lucide="x"></i>
+      </button>
+    </div>
+
+    <!-- Teacher Profile Pill Widget (Top Left) -->
+    <div id="teacher-profile-widget" class="fixed top-4 left-4 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg hover:shadow-xl rounded-full px-3.5 py-1 flex items-center gap-2.5 border border-gray-200 dark:border-gray-800 z-50 select-none cursor-pointer transition-all duration-300 origin-top-left hover:scale-[1.02] active:scale-95 group" dir="rtl" title="بروفايل أستاذ المادة - انقر للتعديل أو رفع الصورة">
+      <!-- Quick Size Toggle Button -->
+      <button id="btn-scale-teacher-widget" class="p-1 text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors cursor-pointer -mr-1" title="تكبير / تصغير حياك الشاشة">
+        <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
+      </button>
+
+      <!-- Text Info (RTL) -->
+      <div class="flex flex-col text-right leading-tight py-0.5">
+        <span id="teacher-profile-name" class="font-bold text-xs text-gray-900 dark:text-gray-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate max-w-[120px]">أ. ديهم عبد اللطيف</span>
+        <span id="teacher-profile-sub" class="text-[10px] text-gray-500 dark:text-gray-400 font-normal truncate max-w-[120px]">كاميرا المعلم المدمجة</span>
+      </div>
+
+      <!-- Avatar Ring & Photo -->
+      <div class="relative w-9 h-9 rounded-full p-[2px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-blue-500 shadow-md shrink-0">
+        <div class="w-full h-full rounded-full overflow-hidden bg-indigo-50 dark:bg-indigo-950 flex items-center justify-center relative">
+          <img id="teacher-profile-img" src="" class="w-full h-full object-cover hidden" alt="صورة الأستاذ">
+          <div id="teacher-profile-placeholder" class="flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-sm">
+            <i data-lucide="user" class="w-4 h-4"></i>
+          </div>
+          <video id="teacher-profile-webcam" class="w-full h-full object-cover hidden" autoplay playsinline muted></video>
+        </div>
+        <!-- Green Online Status Badge -->
+        <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white dark:border-gray-900 rounded-full shadow-sm"></span>
+      </div>
+    </div>
+
+    <!-- Eraser Cursor -->
+    <div class='pointer-events-none rounded-full border-2 border-gray-500 dark:border-gray-300 z-[60]' id='eraser-cursor' style='position:fixed;transform:translate(-50%,-50%);display:none'></div>
+
+    <!-- Rec Timer -->
+    <div class='fixed top-4 left-60 bg-red-600 text-white px-4 py-2.5 rounded-full text-sm font-bold z-[60] flex items-center gap-3 shadow-lg' id='rec-timer' style='display:none'>
+      <div class="flex items-center gap-1.5">
+        <span class='w-2.5 h-2.5 bg-white rounded-full animate-pulse inline-block' id='rec-dot'></span>
+        <span id='rec-time'>00:00</span>
+      </div>
+      <button id="btn-pause-record" class="bg-white/20 hover:bg-white/35 text-white text-xs px-2 py-0.5 rounded-lg transition-colors font-bold flex items-center gap-1 border border-white/20 select-none cursor-pointer" title="Pause / Resume">
+        <i data-lucide="pause" class="w-3 h-3" id="pause-icon"></i>
+        <span id="pause-text">Pause</span>
+      </button>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class='fixed bottom-20 left-1/2 -translate-x-1/2 bg-gray-900/90 text-white px-5 py-2.5 rounded-full text-xs font-bold z-[80] shadow-2xl backdrop-blur-md transition-all duration-300 pointer-events-none opacity-0 translate-y-4' id='toast-msg'></div>
+
+    <!-- Pointer Type Indicator -->
+    <div class='fixed top-16 right-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur px-3 py-1.5 rounded-full text-xs font-bold z-40 border border-gray-200 dark:border-gray-700 transition-opacity duration-300 opacity-0' id='pointer-indicator'></div>
+
+    <!-- Toolbar -->
+    <div class='fixed left-3 top-[52%] -translate-y-1/2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-2xl rounded-2xl p-1.5 flex flex-col gap-1 border border-gray-200 dark:border-gray-800 z-50 max-h-[88vh] overflow-y-auto overflow-x-hidden w-[68px] tb-vertical' id='toolbar'>
+      <div id="toolbar-header" class="flex flex-col items-center gap-1 shrink-0 pb-1 border-b border-gray-200/60 dark:border-gray-800/60">
+        <div id="toolbar-drag" class="cursor-move p-1.5 flex items-center justify-center text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors w-full select-none" title="اسحب لتحريك شريط الأدوات على عرض أو ارتفاع الشاشة بحرية">
+          <i class="w-4 h-4" data-lucide="grip-horizontal" id="toolbar-drag-icon"></i>
+        </div>
+        <div class="flex items-center gap-1 w-full justify-center" id="toolbar-header-btns">
+          <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 cursor-pointer transition-colors' id='btn-toggle-toolbar' title="طي / إظهار شريط الأدوات"><i class='w-4 h-4' data-lucide='chevron-left' id="btn-toggle-icon"></i></button>
+          <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer transition-colors' id='btn-orient-toolbar' title="ثني / تدوير شريط الأدوات (أفقي ⟷ عمودي)"><i class='w-4 h-4' data-lucide='rotate-cw' id="btn-orient-icon"></i></button>
+        </div>
+      </div>
+      
+      <div class='flex flex-col gap-1' id='toolbar-content'>
+        <div class='tb-div'></div>
+        <button class='tool-btn p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' data-tool='select' title="أداة التحديد والتحريك (S)"><i class='w-5 h-5' data-lucide='mouse-pointer-2'></i><span class='text-[9px]'>تحديد</span></button>
+        <button class='tool-btn p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' data-tool='pan' title="تحريك اللوحة (Space)"><i class='w-5 h-5' data-lucide='hand'></i><span class='text-[9px]'>تحريك</span></button>
+        <button class='tool-btn p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' data-tool='laser' title="المؤشر الليزري (L)"><i class='w-5 h-5' data-lucide='sparkles'></i><span class='text-[9px]'>ليزر</span></button>
+        
+        <!-- Pen Group -->
+        <div class="flex flex-col gap-1 w-full" id="pen-group">
+          <button class='tool-btn active w-full p-1.5 rounded-lg flex flex-col items-center gap-0.5 cursor-pointer' data-tool='pen' id='main-pen-btn' title="أقلام الرسم والكتابة والخط (P)">
+            <i class='w-5 h-5' data-lucide='pen' id='main-pen-icon'></i>
+            <div class="flex items-center gap-1">
+              <span class='text-[9px]' id='main-pen-text'>القلم</span>
+              <i class='w-3 h-3 text-gray-400' data-lucide='chevron-down'></i>
+            </div>
+          </button>
+        </div>
+
+        <button class='tool-btn p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' data-tool='eraser' title="الممحاة (E)"><i class='w-5 h-5' data-lucide='eraser'></i><span class='text-[9px]'>ممحاة</span></button>
+
+        <div class='tb-div'></div>
+        <!-- Circular Color Palette Section (مجموعة الألوان الدائرية) -->
+        <div class="flex flex-col items-center gap-1 w-full" id="colors-group">
+          <div class='grid grid-cols-2 gap-1.5 px-1 py-0.5' id='color-picker'>
+            <button class='color-btn w-5 h-5 rounded-full border border-gray-400 mx-auto cursor-pointer transition-transform hover:scale-110' data-color='#1e1e1e' style='background:#1e1e1e' title="أسود"></button>
+            <button class='color-btn w-5 h-5 rounded-full border border-gray-300 dark:border-gray-500 mx-auto cursor-pointer transition-transform hover:scale-110' data-color='#ffffff' style='background:#ffffff' title="أبيض"></button>
+            <button class='color-btn w-5 h-5 rounded-full border border-transparent mx-auto cursor-pointer transition-transform hover:scale-110' data-color='#ef4444' style='background:#ef4444' title="أحمر"></button>
+            <button class='color-btn w-5 h-5 rounded-full border border-transparent mx-auto cursor-pointer transition-transform hover:scale-110' data-color='#3b82f6' style='background:#3b82f6' title="أزرق"></button>
+            <button class='color-btn w-5 h-5 rounded-full border border-transparent mx-auto cursor-pointer transition-transform hover:scale-110' data-color='#22c55e' style='background:#22c55e' title="أخضر"></button>
+            <button class='color-btn w-5 h-5 rounded-full border border-transparent mx-auto cursor-pointer transition-transform hover:scale-110' data-color='#f59e0b' style='background:#f59e0b' title="برتقالي"></button>
+            <button class='color-btn w-5 h-5 rounded-full border border-transparent mx-auto cursor-pointer transition-transform hover:scale-110' data-color='#8b5cf6' style='background:#8b5cf6' title="بنفسجي"></button>
+            <button class='color-btn w-5 h-5 rounded-full border border-transparent mx-auto cursor-pointer transition-transform hover:scale-110' data-color='#ec4899' style='background:#ec4899' title="وردي"></button>
+          </div>
+          <!-- Circular Custom Color Selector (دائري بسيط) -->
+          <div class="flex justify-center px-1 pb-0.5" id="custom-color-container">
+            <label class="w-5 h-5 rounded-full mx-auto cursor-pointer hover:scale-110 transition-transform flex items-center justify-center border border-gray-300 dark:border-gray-600 shadow-xs relative overflow-hidden" id="custom-color-btn" title="لون مخصص" style="background: conic-gradient(from 0deg, #f43f5e, #f97316, #eab308, #22c55e, #06b6d4, #3b82f6, #a855f7, #ec4899, #f43f5e);">
+              <input type="color" id="custom-color-picker" class="opacity-0 absolute inset-0 cursor-pointer w-full h-full" value="#1e1e1e">
+            </label>
+          </div>
+        </div>
+
+        <!-- فاصل مستقل لفصل الألوان تماماً عن سُمك الخط -->
+        <div class='tb-div'></div>
+
+        <!-- Stroke Width Slider (التحكم في سُمك الخط مفصول ومستقل) -->
+        <div class='px-1 py-1 w-full flex flex-col justify-center' id="sw-range-container">
+          <div class='flex justify-between items-center px-0.5 mb-1'>
+            <span class='text-[9px] text-gray-500 dark:text-gray-400 font-medium'>السُمك</span>
+            <span class='text-[9px] text-gray-600 dark:text-gray-300 font-mono font-bold' id='sw-val'>3</span>
+          </div>
+          <input class='w-full accent-blue-500 h-2 cursor-pointer' id='sw-range' max='50' min='1' type='range' value='3' title="سُمك الخط">
+        </div>
+
+        <div class='tb-div'></div>
+        <!-- Undo, Redo & Clear Board Buttons right under colors -->
+        <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' id='btn-undo' title="تراجع (Ctrl+Z)"><i class='w-5 h-5' data-lucide='undo-2'></i><span class='text-[9px]'>تراجع</span></button>
+        <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' id='btn-redo' title="إعادة (Ctrl+Y)"><i class='w-5 h-5' data-lucide='redo-2'></i><span class='text-[9px]'>إعادة</span></button>
+        <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-red-100 text-red-500 dark:hover:bg-red-900/50 cursor-pointer' id='btn-clear' title="مسح محتوى الصفحة الحالية"><i class='w-5 h-5' data-lucide='trash-2'></i><span class='text-[9px]'>مسح</span></button>
+        <div class='tb-div'></div>
+        
+        <!-- Shapes Group -->
+        <button class='tool-btn p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' data-tool='line' title="مستقيم / خط"><i class='w-5 h-5' data-lucide='minus'></i><span class='text-[9px]'>خط</span></button>
+        <button class='tool-btn p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' data-tool='arrow' title="سهم موجه"><i class='w-5 h-5' data-lucide='arrow-up-right'></i><span class='text-[9px]'>سهم</span></button>
+        <button class='tool-btn p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' data-tool='circle' title="دائرة / إهليلج"><i class='w-5 h-5' data-lucide='circle'></i><span class='text-[9px]'>دائرة</span></button>
+        <button class='tool-btn p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' data-tool='triangle' title="مثلث"><i class='w-5 h-5' data-lucide='triangle'></i><span class='text-[9px]'>مثلث</span></button>
+        <button class='tool-btn p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' data-tool='rect' title="مستطيل / مربع"><i class='w-5 h-5' data-lucide='square'></i><span class='text-[9px]'>مستطيل</span></button>
+
+        <!-- 3D Shapes Group -->
+        <div class="flex flex-col gap-1 w-full" id="shapes3d-group">
+          <button class='w-full p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 cursor-pointer border border-indigo-200 dark:border-indigo-800/60 shadow-xs' id='main-shapes3d-btn' title="المجسمات الهندسية ثلاثية الأبعاد (3D Shapes)">
+            <i class='w-5 h-5' data-lucide='box'></i>
+            <div class="flex items-center gap-0.5">
+              <span class='text-[9px] font-bold'>مجسمات</span>
+              <i class='w-3 h-3 text-indigo-400' data-lucide='chevron-down'></i>
+            </div>
+          </button>
+        </div>
+        
+        <div class='tb-div'></div>
+        <button class='tool-btn p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' data-tool='text' title="إدراج نص (T)"><i class='w-5 h-5' data-lucide='type'></i><span class='text-[9px]'>نص</span></button>
+        <button class='tool-btn p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' data-tool='math' title="معادلة وصيغة رياضية LaTeX (M)"><i class='w-5 h-5' data-lucide='calculator'></i><span class='text-[9px]'>رياضيات</span></button>
+        <button class='tool-btn p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' data-tool='sticky' title="ملاحظة لاصقة"><i class='w-5 h-5' data-lucide='sticky-note'></i><span class='text-[9px]'>ملاحظة</span></button>
+        <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' id='btn-image' title="استيراد صورة"><i class='w-5 h-5' data-lucide='image'></i><span class='text-[9px]'>صورة</span></button>
+        <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' id='btn-import-pdf-file' title="استيراد وثيقة ومستند PDF"><i class='w-5 h-5' data-lucide='file-up'></i><span class='text-[9px]'>PDF</span></button>
+        
+        <!-- Teacher & Math Tools Group -->
+        <div class="flex flex-col gap-1 w-full" id="teacher-group">
+          <button class='w-full p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' id='main-teacher-btn' title="أدوات الأستاذ والرياضيات والهندسة">
+            <i class='w-5 h-5' data-lucide='ruler'></i>
+            <div class="flex items-center gap-1">
+              <span class='text-[9px]'>أستاذ</span>
+              <i class='w-3 h-3 text-gray-400' data-lucide='chevron-down'></i>
+            </div>
+          </button>
+        </div>
+
+        <!-- Physics Group -->
+        <div class="flex flex-col gap-1 w-full" id="physics-group">
+          <button class='w-full p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' id='main-physics-btn' title="أدوات ومجسمات الفيزياء">
+            <i class='w-5 h-5' data-lucide='atom'></i>
+            <div class="flex items-center gap-1">
+              <span class='text-[9px]'>فيزياء</span>
+              <i class='w-3 h-3 text-gray-400' data-lucide='chevron-down'></i>
+            </div>
+          </button>
+        </div>
+
+        <!-- Chemistry Group -->
+        <div class="flex flex-col gap-1 w-full" id="chem-group">
+          <button class='w-full p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' id='main-chem-btn' title="أدوات ومجسمات الكيمياء">
+            <i class='w-5 h-5' data-lucide='flask-conical'></i>
+            <div class="flex items-center gap-1">
+              <span class='text-[9px]'>كيمياء</span>
+              <i class='w-3 h-3 text-gray-400' data-lucide='chevron-down'></i>
+            </div>
+          </button>
+        </div>
+
+        <!-- Biology Group -->
+        <div class="flex flex-col gap-1 w-full" id="bio-group">
+          <button class='w-full p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' id='main-bio-btn' title="العلوم الطبيعية والأحياء">
+            <i class='w-5 h-5' data-lucide='microscope'></i>
+            <div class="flex items-center gap-1">
+              <span class='text-[9px]'>أحياء</span>
+              <i class='w-3 h-3 text-gray-400' data-lucide='chevron-down'></i>
+            </div>
+          </button>
+        </div>
+
+        <!-- Geography Group -->
+        <div class="flex flex-col gap-1 w-full" id="geo-group">
+          <button class='w-full p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' id='main-geo-btn' title="الجغرافيا والخرائط التفاعلية">
+            <i class='w-5 h-5' data-lucide='globe'></i>
+            <div class="flex items-center gap-1">
+              <span class='text-[9px]'>خرائط</span>
+              <i class='w-3 h-3 text-gray-400' data-lucide='chevron-down'></i>
+            </div>
+          </button>
+        </div>
+
+        <!-- Astronomy Group -->
+        <div class="flex flex-col gap-1 w-full" id="astro-group">
+          <button class='w-full p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' id='main-astro-btn' title="الفلك وعلوم الفضاء">
+            <i class='w-5 h-5' data-lucide='telescope'></i>
+            <div class="flex items-center gap-1">
+              <span class='text-[9px]'>فلك</span>
+              <i class='w-3 h-3 text-gray-400' data-lucide='chevron-down'></i>
+            </div>
+          </button>
+        </div>
+        
+        <div class='tb-div'></div>
+        <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400 cursor-pointer' id='btn-grid' title="إظهار / إخفاء الشبكة البيانية"><i class='w-5 h-5' data-lucide='grid-3x3'></i><span class='text-[9px]' id='grid-label'>الشبكة</span></button>
+        <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' id='btn-axes' title="إظهار / إخفاء محاور الإحداثيات (X, Y)">
+          <div class='relative w-5 h-5 flex items-center justify-center'><div class='absolute w-full h-[2px] bg-current'></div><div class='absolute h-full w-[2px] bg-current'></div></div>
+          <span class='text-[9px]'>المحاور</span>
+        </button>
+        <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-700 dark:text-gray-300 cursor-pointer' id='btn-bg-img' title="تعيين صورة خلفية للصفحة"><i class='w-5 h-5' data-lucide='wallpaper'></i><span class='text-[9px]'>خلفية</span></button>
+        <input type="file" id="bg-img-up" accept="image/*" class="hidden" />
+
+        <div class='tb-div'></div>
+        <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-orange-50 dark:hover:bg-orange-900/30 text-gray-700 dark:text-gray-300 cursor-pointer' id='btn-focus' title="وضع التركيز وتسليط الضوء (F)"><i class='w-5 h-5' data-lucide='aperture'></i><span class='text-[9px]'>تركيز</span></button>
+
+        <div class='tb-div'></div>
+        <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-700 dark:text-gray-300 cursor-pointer' id='btn-record' title="تسجيل فيديو مع الصوت للدرس"><i class='w-5 h-5' data-lucide='video'></i><span class='text-[9px]' id='rec-label'>تسجيل</span></button>
+        <div class='tb-div'></div>
+        <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' id='btn-fullscreen' title="ملء الشاشة (F11)"><i class='w-5 h-5' data-lucide='maximize'></i><span class='text-[9px]'>شاشة</span></button>
+        <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' id='btn-theme' title="تبديل المظهر الداكن / الفاتح"><i class='w-5 h-5' data-lucide='moon'></i><span class='text-[9px]' id='theme-label'>المظهر</span></button>
+        <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' id='btn-png' title="تصدير الصفحة كصورة عالية الدقة PNG"><i class='w-5 h-5' data-lucide='download'></i><span class='text-[9px]'>صورة</span></button>
+        <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 cursor-pointer' id='btn-pdf' title="تصدير كافة الصفحات إلى ملف PDF"><i class='w-5 h-5' data-lucide='file-text'></i><span class='text-[9px]'>PDF</span></button>
+        <div class='tb-div'></div>
+        <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer' id='btn-shortcuts' title="اختصارات لوحة المفاتيح"><i class='w-5 h-5' data-lucide='keyboard'></i><span class='text-[9px]'>اختصارات</span></button>
+        <button class='p-1.5 rounded-lg flex flex-col items-center gap-0.5 hover:bg-blue-50 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 cursor-pointer' id='btn-about' title="حول التطبيق ومعلومات الإصدار"><i class='w-5 h-5' data-lucide='info'></i><span class='text-[9px]'>حول</span></button>
+      </div>
+    </div>
+
+    <!-- Pages & Zoom Bar (Draggable 2D & Avoids Horizontal Toolbar) -->
+    <div id='pages-bar' class='fixed bottom-4 left-1/2 -translate-x-1/2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-xl rounded-full px-2.5 py-1.5 flex items-center gap-1.5 border border-gray-200 dark:border-gray-800 z-50 select-none' dir='ltr'>
+      <!-- Drag Grip -->
+      <div id="pages-bar-drag" class="cursor-move p-1 text-gray-400 hover:text-blue-500 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center justify-center shrink-0" title="اسحب لتحريك شريط الصفحات والتكبير بحرية في أي مكان على الشاشة">
+        <i class="w-4 h-4" data-lucide="grip-vertical"></i>
+      </div>
+      
+      <!-- Full Controls Wrapper -->
+      <div id="pages-bar-full" class="flex items-center gap-1.5">
+        <button class='p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300 cursor-pointer transition-colors' id='btn-prev' title="الصفحة السابقة (Previous Page)"><i class='w-4 h-4' data-lucide='chevron-left'></i></button>
+        <span class='font-bold text-xs min-w-[46px] text-center text-gray-600 dark:text-gray-300' id='pg-ind'>1 / 1</span>
+        <button class='p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300 cursor-pointer transition-colors' id='btn-next' title="الصفحة التالية (Next Page)"><i class='w-4 h-4' data-lucide='chevron-right'></i></button>
+        <div class='w-px h-4 bg-gray-300 dark:bg-gray-700 mx-0.5'></div>
+        <button class='p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-blue-600 dark:text-blue-400 cursor-pointer transition-colors' id='btn-add-pg' title="إضافة صفحة جديدة (Add Page)"><i class='w-4 h-4' data-lucide='plus'></i></button>
+        <button class='p-1.5 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-full text-red-500 cursor-pointer transition-colors' id='btn-del-pg' title="حذف الصفحة الحالية (Delete Page)"><i class='w-4 h-4' data-lucide='trash-2'></i></button>
+        <div class='w-px h-4 bg-gray-300 dark:bg-gray-700 mx-0.5'></div>
+        <button class='p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300 cursor-pointer transition-colors' id='btn-zoom-out' title="تصغير اللوحة (Zoom Out)"><i class='w-4 h-4' data-lucide='zoom-out'></i></button>
+        <button class='px-2 py-0.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-xs font-bold text-gray-600 dark:text-gray-300 cursor-pointer transition-colors min-w-[40px] text-center' id='btn-zoom-val' title="إعادة ضبط المقياس 100% (Reset Zoom)">100%</button>
+        <button class='p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-600 dark:text-gray-300 cursor-pointer transition-colors' id='btn-zoom-in' title="تكبير اللوحة (Zoom In)"><i class='w-4 h-4' data-lucide='zoom-in'></i></button>
+      </div>
+
+      <!-- Mini Chip (shown when collapsed) -->
+      <div id="pages-bar-mini" class="hidden items-center gap-1.5 px-1 py-0.5 cursor-pointer hover:text-blue-500 text-xs font-bold text-gray-700 dark:text-gray-300" title="انقر لتوسيع عناصر التحكم بالصفحات والمقياس">
+        <span id="pages-bar-mini-text">1 / 1 • 100%</span>
+      </div>
+
+      <!-- Collapse / Minimize Button -->
+      <button class='p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 cursor-pointer transition-colors shrink-0' id='btn-collapse-pages' title="تصغير / توسيع شريط الصفحات">
+        <i class='w-3.5 h-3.5' data-lucide='minimize-2' id='btn-collapse-pages-icon'></i>
+      </button>
+    </div>
+    <input accept='image/*' class='hidden' id='img-up' type='file'>
+    <input accept='application/pdf' class='hidden' id='pdf-file-up' type='file'>
+
+    <!-- Pen Selection Flyout Popover -->
+    <div id="pen-dropdown" class="hidden flex-col gap-2.5 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl p-3.5 w-72 border border-blue-100 dark:border-blue-900/40 shadow-2xl z-[70] fixed text-right font-sans select-none" dir="rtl">
+      <div class="flex items-center justify-between pb-2 border-b border-gray-100 dark:border-gray-800" dir="ltr">
+        <span class="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 px-2 py-0.5 rounded-full font-bold">Pen Engine</span>
+        <div class="flex items-center gap-1.5 text-xs font-bold text-gray-800 dark:text-gray-100" dir="rtl">
+          <i data-lucide="pen-tool" class="w-4 h-4 text-blue-500"></i>
+          <span>أدوات وأقلام الرسم والكتابة</span>
+        </div>
+      </div>
+
+      <!-- Pen Types Grid -->
+      <div class="grid grid-cols-2 gap-2" id="pen-types-grid">
+        <button class="pen-select-btn p-2 rounded-xl flex flex-col items-start gap-1 text-right border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/30 transition-all cursor-pointer" data-tool="pen" data-text="قلم عادي" data-icon="pen">
+          <div class="flex items-center justify-between w-full">
+            <div class="w-7 h-7 rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+              <i data-lucide="pen" class="w-4 h-4"></i>
+            </div>
+            <span class="pen-check text-blue-500"><i data-lucide="check" class="w-3.5 h-3.5"></i></span>
+          </div>
+          <div class="font-bold text-xs text-gray-800 dark:text-gray-100 mt-0.5">قلم عادي</div>
+          <div class="text-[9px] text-gray-500 dark:text-gray-400 leading-tight">انسيابي ناعم حساس للضغط</div>
+        </button>
+
+        <button class="pen-select-btn p-2 rounded-xl flex flex-col items-start gap-1 text-right border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/30 transition-all cursor-pointer" data-tool="brush" data-text="فرشاة" data-icon="brush">
+          <div class="flex items-center justify-between w-full">
+            <div class="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <i data-lucide="brush" class="w-4 h-4"></i>
+            </div>
+            <span class="pen-check hidden text-emerald-500"><i data-lucide="check" class="w-3.5 h-3.5"></i></span>
+          </div>
+          <div class="font-bold text-xs text-gray-800 dark:text-gray-100 mt-0.5">فرشاة ألوان</div>
+          <div class="text-[9px] text-gray-500 dark:text-gray-400 leading-tight">ضربات ناعمة متدرجة وعريضة</div>
+        </button>
+
+        <button class="pen-select-btn p-2 rounded-xl flex flex-col items-start gap-1 text-right border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/30 transition-all cursor-pointer" data-tool="sharp_pen" data-text="ريشة" data-icon="pen-tool">
+          <div class="flex items-center justify-between w-full">
+            <div class="w-7 h-7 rounded-lg bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+              <i data-lucide="pen-tool" class="w-4 h-4"></i>
+            </div>
+            <span class="pen-check hidden text-amber-500"><i data-lucide="check" class="w-3.5 h-3.5"></i></span>
+          </div>
+          <div class="font-bold text-xs text-gray-800 dark:text-gray-100 mt-0.5">ريشة خط عربي</div>
+          <div class="text-[9px] text-gray-500 dark:text-gray-400 leading-tight">رأس مشطوف مائل للخط العربي</div>
+        </button>
+
+        <button class="pen-select-btn p-2 rounded-xl flex flex-col items-start gap-1 text-right border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/30 transition-all cursor-pointer" data-tool="highlighter" data-text="تظليل" data-icon="highlighter">
+          <div class="flex items-center justify-between w-full">
+            <div class="w-7 h-7 rounded-lg bg-fuchsia-100 dark:bg-fuchsia-900/50 text-fuchsia-600 dark:text-fuchsia-400 flex items-center justify-center">
+              <i data-lucide="highlighter" class="w-4 h-4"></i>
+            </div>
+            <span class="pen-check hidden text-fuchsia-500"><i data-lucide="check" class="w-3.5 h-3.5"></i></span>
+          </div>
+          <div class="font-bold text-xs text-gray-800 dark:text-gray-100 mt-0.5">قلم تظليل</div>
+          <div class="text-[9px] text-gray-500 dark:text-gray-400 leading-tight">تحديد فسفوري شفاف وبارز</div>
+        </button>
+      </div>
+
+      <!-- Stroke Thickness Quick Presets -->
+      <div class="pt-2 border-t border-gray-100 dark:border-gray-800 flex flex-col gap-1.5">
+        <div class="flex items-center justify-between text-[11px] text-gray-600 dark:text-gray-300">
+          <span class="font-bold">سُمك الخط السريع</span>
+          <span id="pen-quick-sw-val" class="font-mono text-[10px] text-blue-500 font-bold">3px</span>
+        </div>
+        <div class="grid grid-cols-4 gap-1.5" id="pen-quick-widths">
+          <button class="pen-width-preset py-1 px-1.5 rounded-lg text-xs font-semibold border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center justify-center gap-1 cursor-pointer transition-colors" data-width="2">
+            <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+            <span>دقيق</span>
+          </button>
+          <button class="pen-width-preset py-1 px-1.5 rounded-lg text-xs font-semibold border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center justify-center gap-1 cursor-pointer transition-colors" data-width="4">
+            <span class="w-2 h-2 rounded-full bg-current"></span>
+            <span>متوسط</span>
+          </button>
+          <button class="pen-width-preset py-1 px-1.5 rounded-lg text-xs font-semibold border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center justify-center gap-1 cursor-pointer transition-colors" data-width="8">
+            <span class="w-2.5 h-2.5 rounded-full bg-current"></span>
+            <span>عريض</span>
+          </button>
+          <button class="pen-width-preset py-1 px-1.5 rounded-lg text-xs font-semibold border border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center justify-center gap-1 cursor-pointer transition-colors" data-width="16">
+            <span class="w-3 h-3 rounded-full bg-current"></span>
+            <span>كبير</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="shapes3d-dropdown" class="hidden flex-col gap-1.5 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl p-3 w-80 max-h-[85vh] overflow-y-auto border border-indigo-100 dark:border-indigo-900/40 shadow-2xl custom-scrollbar z-[70] fixed text-right font-sans" dir="rtl">
+      <div class="sticky top-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-10 pb-1.5 border-b border-gray-100 dark:border-gray-800">
+        <div class="flex items-center justify-between mb-1.5 px-1" dir="ltr">
+          <span class="text-[10px] bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 px-2 py-0.5 rounded-full font-bold">3D Engine</span>
+          <span class="text-xs font-bold text-gray-800 dark:text-gray-100 flex items-center gap-1.5" dir="rtl">
+            <i data-lucide="box" class="w-4 h-4 text-indigo-500"></i>
+            المجسمات ثلاثية الأبعاد
+          </span>
+        </div>
+        <div class="relative w-full">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <input type="text" id="shapes3d-search-input" class="flyout-search-input w-full pr-8 pl-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-gray-400" placeholder="بحث في الأشكال ثلاثية الأبعاد..." data-subject="shapes3d">
+        </div>
+      </div>
+
+      <!-- Quick Access 3D Section -->
+      <div id="shapes3d-quick-container" class="flex flex-col gap-1 my-0.5">
+        <div class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1 px-1">
+          <i data-lucide="zap" class="w-3 h-3"></i> مجسمات شائعة
+        </div>
+        <div class="grid grid-cols-2 gap-1" dir="ltr">
+          <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='shapes3d.cube' title="3D Cube"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-blue-500 shrink-0' data-lucide='box'></i><span class="font-medium truncate">مكعب 3D</span></div></button>
+          <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='shapes3d.cylinder' title="3D Cylinder"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-emerald-500 shrink-0' data-lucide='cylinder'></i><span class="font-medium truncate">أسطوانة 3D</span></div></button>
+          <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='shapes3d.sphere' title="3D Sphere"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-purple-500 shrink-0' data-lucide='globe-2'></i><span class="font-medium truncate">كرة 3D</span></div></button>
+          <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='shapes3d.cone' title="3D Cone"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-amber-500 shrink-0' data-lucide='cone'></i><span class="font-medium truncate">مخروط 3D</span></div></button>
+        </div>
+      </div>
+
+      <div class="w-full h-px bg-gray-100 dark:bg-gray-800 my-1"></div>
+
+      <!-- Categories Accordion -->
+      <div id="shapes3d-categories-accordion" class="flex flex-col gap-1">
+        <!-- Category 1: Polyhedra & Prisms -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-200 transition-colors cursor-pointer" aria-expanded="true">
+            <span class="flex items-center gap-1.5"><i data-lucide="boxes" class="w-3.5 h-3.5 text-indigo-500"></i> متعددات الوجوه والمناشير</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 chevron-icon rotate-180"></i>
+          </button>
+          <div class="category-content flex flex-col gap-0.5 pt-1 pr-1">
+
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='shapes3d.cube' title="مكعب ثلاثي الأبعاد منتظم"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-blue-500 shrink-0' data-lucide='box'></i><span class="font-medium truncate">مكعب (Cube)</span></div><span class="text-[10px] text-gray-400 font-mono" dir="ltr">V = a³</span></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='shapes3d.cuboid' title="متوازي مستطيلات ثلاثي الأبعاد"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-sky-500 shrink-0' data-lucide='package'></i><span class="font-medium truncate">متوازي مستطيلات (Cuboid)</span></div><span class="text-[10px] text-gray-400 font-mono" dir="ltr">V = L×W×H</span></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='shapes3d.pyramid' title="هرم رباعي منتظم ثلاثي الأبعاد"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-pink-500 shrink-0' data-lucide='pyramid'></i><span class="font-medium truncate">هرم رباعي (Pyramid)</span></div><span class="text-[10px] text-gray-400 font-mono" dir="ltr">V = ⅓a²h</span></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='shapes3d.triangular-prism' title="منشور ثلاثي قائم"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-teal-500 shrink-0' data-lucide='triangle'></i><span class="font-medium truncate">منشور ثلاثي (Triangular Prism)</span></div><span class="text-[10px] text-gray-400 font-mono" dir="ltr">V = S×L</span></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='shapes3d.tetrahedron' title="رباعي الوجوه منتظم"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-purple-500 shrink-0' data-lucide='layers'></i><span class="font-medium truncate">رباعي الوجوه (Tetrahedron)</span></div><span class="text-[10px] text-gray-400 font-mono" dir="ltr">4 وجوه</span></button>
+          </div>
+        </div>
+
+        <!-- Category 2: Curved Solids & Revolution -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-200 transition-colors cursor-pointer" aria-expanded="true">
+            <span class="flex items-center gap-1.5"><i data-lucide="orbit" class="w-3.5 h-3.5 text-amber-500"></i> المجسمات الدورانية والمنحنية</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 chevron-icon rotate-180"></i>
+          </button>
+          <div class="category-content flex flex-col gap-0.5 pt-1 pr-1">
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='shapes3d.cylinder' title="أسطوانة دورانية ثلاثية الأبعاد"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-emerald-500 shrink-0' data-lucide='cylinder'></i><span class="font-medium truncate">أسطوانة (Cylinder)</span></div><span class="text-[10px] text-gray-400 font-mono" dir="ltr">V = πr²h</span></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='shapes3d.cone' title="مخروط دوراني ثلاثي الأبعاد"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-amber-500 shrink-0' data-lucide='cone'></i><span class="font-medium truncate">مخروط (Cone)</span></div><span class="text-[10px] text-gray-400 font-mono" dir="ltr">V = ⅓πr²h</span></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='shapes3d.sphere' title="كرة مجسمة مع خطوط الطول ودوائر العرض"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-purple-500 shrink-0' data-lucide='globe-2'></i><span class="font-medium truncate">كرة (Sphere)</span></div><span class="text-[10px] text-gray-400 font-mono" dir="ltr">V = ⁴⁄₃πr³</span></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='shapes3d.hemisphere' title="نصف كرة ثلاثي الأبعاد"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-indigo-500 shrink-0' data-lucide='circle-dot'></i><span class="font-medium truncate">نصف كرة (Hemisphere)</span></div><span class="text-[10px] text-gray-400 font-mono" dir="ltr">V = ⅔πr³</span></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='shapes3d.capsule' title="كبسولة هندسية"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-rose-500 shrink-0' data-lucide='pill'></i><span class="font-medium truncate">كبسولة (Capsule)</span></div><span class="text-[10px] text-gray-400 font-mono" dir="ltr">أسطوانة+نصفين</span></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='shapes3d.torus' title="طارة / حلقة ثلاثية الأبعاد"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-yellow-500 shrink-0' data-lucide='disc'></i><span class="font-medium truncate">طارة حلقية (Torus)</span></div><span class="text-[10px] text-gray-400 font-mono" dir="ltr">V = 2π²Rr²</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Teacher & Math Tools Dropdown Popover -->
+    <div id="teacher-dropdown" class="hidden flex-col gap-1.5 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl p-3 w-72 max-h-[85vh] overflow-y-auto border border-gray-200 dark:border-gray-800 shadow-2xl custom-scrollbar z-[70] fixed text-right font-sans" dir="rtl">
+      <div class="sticky top-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-10 pb-1.5 border-b border-gray-100 dark:border-gray-800">
+        <div class="flex items-center justify-between mb-1.5 px-1">
+          <span class="text-xs font-bold text-gray-800 dark:text-gray-100 flex items-center gap-1.5">
+            <i data-lucide="ruler" class="w-4 h-4 text-amber-500"></i>
+            أدوات الأستاذ والرياضيات
+          </span>
+          <span class="text-[10px] bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300 px-2 py-0.5 rounded-full font-semibold">هندسة</span>
+        </div>
+        <div class="relative w-full">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <input type="text" id="teacher-search-input" class="flyout-search-input w-full pr-8 pl-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500 placeholder:text-gray-400" placeholder="ابحث في أدوات الأستاذ والرياضيات..." data-subject="teacher">
+        </div>
+      </div>
+
+      <!-- Quick Access Section -->
+      <div id="teacher-quick-container" class="flex flex-col gap-1 my-0.5">
+        <div class="text-[10px] font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1 px-1">
+          <i data-lucide="zap" class="w-3 h-3"></i> أدوات سريعة
+        </div>
+        <div class="grid grid-cols-2 gap-1">
+          <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-amber-50 dark:hover:bg-amber-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='math.ruler' title="مسطرة مدرجة"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-amber-500 shrink-0' data-lucide='ruler'></i><span class="font-medium truncate">مسطرة مدرجة</span></div></button>
+          <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-amber-50 dark:hover:bg-amber-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='math.protractor' title="منقلة 180°"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-sky-500 shrink-0' data-lucide='pie-chart'></i><span class="font-medium truncate">منقلة 180°</span></div></button>
+          <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-amber-50 dark:hover:bg-amber-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='math.set-square' title="كوس قائم 90°"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-teal-600 shrink-0' data-lucide='triangle'></i><span class="font-medium truncate">كوس قائم 90°</span></div></button>
+          <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-amber-50 dark:hover:bg-amber-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='math.compass' title="فرجار هندسي"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-blue-500 shrink-0' data-lucide='circle-dot'></i><span class="font-medium truncate">فرجار هندسي</span></div></button>
+        </div>
+      </div>
+
+      <div class="w-full h-px bg-gray-100 dark:bg-gray-800 my-1"></div>
+
+      <!-- Categories Accordion Container -->
+      <div id="teacher-categories-accordion" class="flex flex-col gap-1">
+        <!-- Category 1: Geometric Instruments -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-200 transition-colors cursor-pointer" aria-expanded="true">
+            <span class="flex items-center gap-1.5"><i data-lucide="compass" class="w-3.5 h-3.5 text-amber-500"></i> الأدوات الهندسية والإنشاء</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 chevron-icon rotate-180"></i>
+          </button>
+          <div class="category-content flex flex-col gap-0.5 pt-1 pr-1">
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-amber-50 dark:hover:bg-amber-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='math.ruler' title="المسطرة المدرجة بالسنتمتر مع إمكانية التدوير والرسم"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-amber-500 shrink-0' data-lucide='ruler'></i><span class="font-medium truncate">مسطرة مدرجة (Ruler)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-amber-50 dark:hover:bg-amber-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='math.protractor' title="المنقلة الهندسية 180 درجة لقياس ورسم الزوايا"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-sky-500 shrink-0' data-lucide='pie-chart'></i><span class="font-medium truncate">منقلة هندسية (Protractor)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-amber-50 dark:hover:bg-amber-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='math.set-square' title="الكوس القائم 90 درجة لإنشاء المستقيمات المتعامدة والمتوازية"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-teal-600 shrink-0' data-lucide='triangle'></i><span class="font-medium truncate">كوس قائم (Set Square 90°)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-amber-50 dark:hover:bg-amber-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='math.compass' title="الفرجار الهندسي الدوار لرسم الدوائر والأقواس"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-blue-500 shrink-0' data-lucide='circle-dot'></i><span class="font-medium truncate">فرجار هندسي (Compass)</span></div></button>
+          </div>
+        </div>
+
+        <!-- Category 2: Measurement & Calculation -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-200 transition-colors cursor-pointer" aria-expanded="true">
+            <span class="flex items-center gap-1.5"><i data-lucide="calculator" class="w-3.5 h-3.5 text-indigo-500"></i> الحساب والقياس والتحليل</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 chevron-icon rotate-180"></i>
+          </button>
+          <div class="category-content flex flex-col gap-0.5 pt-1 pr-1">
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='math.calculator' title="آلة حاسبة رقمية تفاعلية للعمليات الحسابية"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-indigo-500 shrink-0' data-lucide='calculator'></i><span class="font-medium truncate">آلة حاسبة (Calculator)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='math.angle' title="أداة تفاعلية لقياس الزوايا الحية بين 3 نقاط"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-red-500 shrink-0' data-lucide='chevron-right'></i><span class="font-medium truncate">قياس الزوايا (Angle Measure)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-indigo-50 dark:hover:bg-indigo-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='math.distance' title="أداة تفاعلية لقياس المسافة والأبعاد بالسنتمتر"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-emerald-500 shrink-0' data-lucide='move-horizontal'></i><span class="font-medium truncate">قياس الأبعاد (Distance Measure)</span></div></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Physics Dropdown Popover -->
+    <div id="physics-dropdown" class="hidden flex-col gap-1.5 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl p-3 w-72 max-h-[85vh] overflow-y-auto border border-gray-200 dark:border-gray-800 shadow-2xl custom-scrollbar z-[70] fixed text-right font-sans" dir="rtl">
+      <div class="sticky top-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-10 pb-1.5 border-b border-gray-100 dark:border-gray-800">
+        <div class="flex items-center justify-between mb-1.5 px-1">
+          <span class="text-xs font-bold text-gray-800 dark:text-gray-100 flex items-center gap-1.5">
+            <i data-lucide="atom" class="w-4 h-4 text-blue-500"></i>
+            أدوات ومجسمات الفيزياء
+          </span>
+          <span class="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 px-2 py-0.5 rounded-full font-semibold">فيزياء</span>
+        </div>
+        <div class="relative w-full">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <input type="text" id="physics-search-input" class="flyout-search-input w-full pr-8 pl-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400" placeholder="ابحث في أدوات الفيزياء..." data-subject="physics">
+        </div>
+      </div>
+
+      <!-- Quick Access Section -->
+      <div id="physics-quick-container" class="flex flex-col gap-1 my-0.5">
+        <div class="text-[10px] font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1 px-1">
+          <i data-lucide="zap" class="w-3 h-3"></i> أدوات سريعة
+        </div>
+        <div class="grid grid-cols-2 gap-1">
+          <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='physics.battery-pro' title="بطارية واقعية"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-orange-500 shrink-0' data-lucide='battery-charging'></i><span class="font-medium truncate">بطارية واقعية</span></div></button>
+          <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='physics.circuit-pro' title="دارة كهربائية واقعية"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-yellow-500 shrink-0' data-lucide='zap'></i><span class="font-medium truncate">دارة واقعية</span></div></button>
+          <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='physics.force-vector' title="شعاع القوة"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-red-500 shrink-0' data-lucide='arrow-right'></i><span class="font-medium truncate">القوة (F)</span></div></button>
+          <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='physics.body' title="كتلة مجسمة"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-blue-500 shrink-0' data-lucide='box'></i><span class="font-medium truncate">الكتلة (m)</span></div></button>
+          <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='physics.velocity-vector' title="شعاع السرعة"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-emerald-500 shrink-0' data-lucide='move-right'></i><span class="font-medium truncate">السرعة (v)</span></div></button>
+          <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='physics.acceleration-vector' title="شعاع التسارع"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-purple-500 shrink-0' data-lucide='chevrons-right'></i><span class="font-medium truncate">التسارع (a)</span></div></button>
+            <button class="edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer" data-edu-type="physics.resultant-vector" title="محصلة القوى"><div class="flex items-center gap-2 truncate"><i class="w-3.5 h-3.5 text-red-600 shrink-0" data-lucide="arrow-right"></i><span class="font-medium truncate">محصلة القوى (R)</span></div></button>
+            <button class="edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer" data-edu-type="physics.moving-body" title="جسم متحرك"><div class="flex items-center gap-2 truncate"><i class="w-3.5 h-3.5 text-emerald-600 shrink-0" data-lucide="truck"></i><span class="font-medium truncate">جسم متحرك</span></div></button>
+            <button class="edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer" data-edu-type="physics.ball" title="كرة مجسمة"><div class="flex items-center gap-2 truncate"><i class="w-3.5 h-3.5 text-blue-500 shrink-0" data-lucide="circle"></i><span class="font-medium truncate">كرة مجسمة</span></div></button>
+            <button class="edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer" data-edu-type="physics.wave" title="موجة"><div class="flex items-center gap-2 truncate"><i class="w-3.5 h-3.5 text-cyan-500 shrink-0" data-lucide="activity"></i><span class="font-medium truncate">موجة عامة</span></div></button>
+            <button class="edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer" data-edu-type="physics.transverse-wave" title="موجة عرضية"><div class="flex items-center gap-2 truncate"><i class="w-3.5 h-3.5 text-indigo-500 shrink-0" data-lucide="activity"></i><span class="font-medium truncate">موجة عرضية</span></div></button>
+            <button class="edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer" data-edu-type="physics.longitudinal-wave" title="موجة طولية"><div class="flex items-center gap-2 truncate"><i class="w-3.5 h-3.5 text-violet-500 shrink-0" data-lucide="activity"></i><span class="font-medium truncate">موجة طولية</span></div></button>
+            <button class="edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer" data-edu-type="physics.wire" title="سلك كهربائي"><div class="flex items-center gap-2 truncate"><i class="w-3.5 h-3.5 text-slate-500 shrink-0" data-lucide="minus"></i><span class="font-medium truncate">سلك كهربائي</span></div></button>
+        </div>
+      </div>
+
+      <div class="w-full h-px bg-gray-100 dark:bg-gray-800 my-1"></div>
+
+      <!-- Categories Accordion Container -->
+      <div id="physics-categories-accordion" class="flex flex-col gap-1">
+        <!-- Category A: Quantities & Vectors -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-200 transition-colors cursor-pointer" aria-expanded="true">
+            <span class="flex items-center gap-1.5"><i data-lucide="arrow-up-right" class="w-3.5 h-3.5 text-blue-500"></i> الأشعة والميكانيك والتحريك</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 chevron-icon rotate-180"></i>
+          </button>
+          <div class="category-content flex flex-col gap-0.5 pt-1 pr-1">
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.body' title="كتلة فيزيائية مجسمة"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-blue-500 shrink-0' data-lucide='box'></i><span class="font-medium truncate">كتلة فيزيائية (m)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.force-vector' title="شعاع القوة"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-red-500 shrink-0' data-lucide='arrow-right'></i><span class="font-medium truncate">شعاع القوة (F)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.weight-vector' title="قوة الثقل"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-amber-500 shrink-0' data-lucide='arrow-down'></i><span class="font-medium truncate">قوة الثقل (W / P)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.normal-force-vector' title="قوة رد الفعل السطحي"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-blue-600 shrink-0' data-lucide='arrow-up'></i><span class="font-medium truncate">رد الفعل السطحي (R / N)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.velocity-vector' title="شعاع السرعة"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-emerald-500 shrink-0' data-lucide='move-right'></i><span class="font-medium truncate">شعاع السرعة (v)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.acceleration-vector' title="شعاع التسارع"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-purple-500 shrink-0' data-lucide='chevrons-right'></i><span class="font-medium truncate">شعاع التسارع (a)</span></div></button>
+          </div>
+        </div>
+
+        <!-- Category B: Circuits & Electricity -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-200 transition-colors cursor-pointer" aria-expanded="true">
+            <span class="flex items-center gap-1.5"><i data-lucide="zap" class="w-3.5 h-3.5 text-amber-500"></i> الدارات الكهربائية والمغناطيس</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 chevron-icon rotate-180"></i>
+          </button>
+          <div class="category-content flex flex-col gap-0.5 pt-1 pr-1">
+            
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.switch' title="قاطعة كهربائية"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-slate-500 shrink-0' data-lucide='toggle-left'></i><span class="font-medium truncate">قاطعة كهربائية (K)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.resistor' title="ناقل أومي / مقاومة"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-amber-600 shrink-0' data-lucide='activity'></i><span class="font-medium truncate">مقاومة / ناقل أومي (R)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.lamp' title="مصباح توهج كهربائي"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-yellow-500 shrink-0' data-lucide='lightbulb'></i><span class="font-medium truncate">مصباح كهربائي (L)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.ammeter' title="مقياس شدة التيار الأمبير"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-sky-600 shrink-0' data-lucide='gauge'></i><span class="font-medium truncate">مقياس الأمبير (A)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.voltmeter' title="مقياس التوتر الفولط"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-purple-600 shrink-0' data-lucide='circle-dot'></i><span class="font-medium truncate">مقياس الفولط (V)</span></div></button>
+          </div>
+        </div>
+
+        <!-- Category C: Optics, Waves & Mechanics -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-200 transition-colors cursor-pointer" aria-expanded="true">
+            <span class="flex items-center gap-1.5"><i data-lucide="sparkles" class="w-3.5 h-3.5 text-purple-500"></i> البصريات والموجات والميكانيك</span>
+            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 chevron-icon rotate-180"></i>
+          </button>
+          <div class="category-content flex flex-col gap-0.5 pt-1 pr-1">
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.convex-lens' title="عدسة مقربة محدبة"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-sky-500 shrink-0' data-lucide='disc'></i><span class="font-medium truncate">عدسة مقربة (محدبة)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.concave-lens' title="عدسة مبعدة مفرقة"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-indigo-500 shrink-0' data-lucide='circle'></i><span class="font-medium truncate">عدسة مبعدة (مقعرة)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.optical-axis' title="المحور البصري الأصلي"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-slate-500 shrink-0' data-lucide='minus'></i><span class="font-medium truncate">محور بصري رئيسي</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.mirror' title="مرآة مستوية"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-slate-500 shrink-0' data-lucide='slash'></i><span class="font-medium truncate">مرآة مستوية عاكسة</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.light-ray' title="شعاع ضوئي"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-amber-500 shrink-0' data-lucide='sun'></i><span class="font-medium truncate">شعاع ضوئي مستقيم</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.pendulum' title="نواس بسيط متذبذب"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-purple-500 shrink-0' data-lucide='timer'></i><span class="font-medium truncate">نواس بسيط متذبذب</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.pulley' title="بكرة ميكانيكية"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-teal-600 shrink-0' data-lucide='disc-3'></i><span class="font-medium truncate">بكرة ميكانيكية</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.magnet' title="مغناطيس مستقيم"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-red-600 shrink-0' data-lucide='magnet'></i><span class="font-medium truncate">مغناطيس مستقيم ثنائي القطب</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.equation' title="معادلة فيزيائية"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-indigo-600 shrink-0' data-lucide='sigma'></i><span class="font-medium truncate">معادلة فيزيائية</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='physics.focal-point' title="بؤرة بصرية (F)"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-amber-500 shrink-0' data-lucide='dot'></i><span class="font-medium truncate">بؤرة بصرية (F)</span></div></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chemistry Dropdown Popover -->
+    <div id="chem-dropdown" class="hidden flex-col gap-1.5 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl p-3 w-72 max-h-[85vh] overflow-y-auto border border-gray-200 dark:border-gray-800 shadow-2xl custom-scrollbar z-[70] fixed text-right font-sans" dir="rtl">
+      <div class="sticky top-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-10 pb-1.5 border-b border-gray-100 dark:border-gray-800">
+        <div class="flex items-center justify-between mb-1.5 px-1">
+          <span class="text-xs font-bold text-gray-800 dark:text-gray-100 flex items-center gap-1.5">
+            <i data-lucide="flask-conical" class="w-4 h-4 text-emerald-500"></i>
+            أدوات ومجسمات الكيمياء
+          </span>
+          <span class="text-[10px] bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 px-2 py-0.5 rounded-full font-semibold">كيمياء</span>
+        </div>
+        <div class="relative w-full">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <input type="text" id="chem-search-input" class="flyout-search-input w-full pr-8 pl-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 placeholder:text-gray-400" placeholder="ابحث في أدوات الكيمياء..." data-subject="chem">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-1 my-1">
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='chemistry.element' title="بطاقة عنصر كيميائي"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-sky-500 shrink-0' data-lucide='grid'></i><span class="font-medium truncate">بطاقة عنصر</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='chemistry.atom' title="نموذج ذرة مجسمة"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-red-500 shrink-0' data-lucide='disc'></i><span class="font-medium truncate">ذرة كيميائية</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='chemistry.molecule' title="جزيء كيميائي"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-emerald-500 shrink-0' data-lucide='share-2'></i><span class="font-medium truncate">جزيء كيميائي</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='chemistry.bond' title="رابطة كيميائية"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-slate-500 shrink-0' data-lucide='link'></i><span class="font-medium truncate">رابطة كيميائية</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='chemistry.beaker-pro' title="بيشر مخبري واقعي"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-blue-500 shrink-0' data-lucide='cup-soda'></i><span class="font-medium truncate">بيشر واقعي</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='chemistry.flask-pro' title="دورق إرلنماير واقعي"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-purple-500 shrink-0' data-lucide='flask-conical'></i><span class="font-medium truncate">دورق واقعي</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='chemistry.bunsen-pro' title="موقد بنسن واقعي"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-red-500 shrink-0' data-lucide='flame'></i><span class="font-medium truncate">موقد واقعي</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='chemistry.heating-pro' title="تركيب تسخين مخبري واقعي"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-orange-500 shrink-0' data-lucide='flame'></i><span class="font-medium truncate">تسخين واقعي</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='chemistry.beaker' title="كأس مخبري بيشر"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-sky-500 shrink-0' data-lucide='cup-soda'></i><span class="font-medium truncate">بيشر مخبري</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='chemistry.test-tube' title="أنبوب اختبار مخبري"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-emerald-500 shrink-0' data-lucide='test-tube'></i><span class="font-medium truncate">أنبوب اختبار</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='chemistry.flask' title="دورق مخروطي إرلنماير"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-indigo-500 shrink-0' data-lucide='flask-conical'></i><span class="font-medium truncate">دورق إرلنماير</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='chemistry.bunsen-burner' title="موقد بنسن حراري"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-orange-500 shrink-0' data-lucide='flame'></i><span class="font-medium truncate">موقد بنسن</span></div></button>
+        <button class="edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60" data-edu-type="chemistry.thermometer" title="محرار مخبري"><div class="flex items-center gap-1.5 truncate"><i class="w-3.5 h-3.5 text-red-500 shrink-0" data-lucide="thermometer"></i><span class="font-medium truncate">محرار مخبري</span></div></button>
+        <button class="edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60" data-edu-type="chemistry.scale" title="ميزان الكتروني"><div class="flex items-center gap-1.5 truncate"><i class="w-3.5 h-3.5 text-slate-500 shrink-0" data-lucide="scale"></i><span class="font-medium truncate">ميزان الكتروني</span></div></button>
+        <button class="edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60" data-edu-type="chemistry.dropper" title="ماصة / قطارة"><div class="flex items-center gap-1.5 truncate"><i class="w-3.5 h-3.5 text-amber-500 shrink-0" data-lucide="pipette"></i><span class="font-medium truncate">ماصة مخبرية</span></div></button>
+        <button class="edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60" data-edu-type="chemistry.funnel" title="قمع ترشيح"><div class="flex items-center gap-1.5 truncate"><i class="w-3.5 h-3.5 text-blue-500 shrink-0" data-lucide="filter"></i><span class="font-medium truncate">قمع ترشيح</span></div></button>
+        <button class="edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60" data-edu-type="chemistry.filter" title="ورق ترشيح"><div class="flex items-center gap-1.5 truncate"><i class="w-3.5 h-3.5 text-teal-500 shrink-0" data-lucide="file"></i><span class="font-medium truncate">ورق ترشيح</span></div></button>
+        <button class="edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60" data-edu-type="chemistry.symbol" title="رمز كيميائي"><div class="flex items-center gap-1.5 truncate"><i class="w-3.5 h-3.5 text-emerald-600 shrink-0" data-lucide="atom"></i><span class="font-medium truncate">رمز كيميائي</span></div></button>
+      </div>
+    </div>
+
+    <!-- Biology Dropdown Popover -->
+    <div id="bio-dropdown" class="hidden flex-col gap-1.5 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl p-3 w-72 max-h-[85vh] overflow-y-auto border border-gray-200 dark:border-gray-800 shadow-2xl custom-scrollbar z-[70] fixed text-right font-sans" dir="rtl">
+      <div class="sticky top-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-10 pb-1.5 border-b border-gray-100 dark:border-gray-800">
+        <div class="flex items-center justify-between mb-1.5 px-1">
+          <span class="text-[10px] bg-emerald-100 text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-300 px-2 py-0.5 rounded-full font-semibold">المعلم</span>
+          <span class="text-xs font-bold text-gray-800 dark:text-gray-100 flex items-center gap-1.5">
+            العلوم الطبيعية
+            <i data-lucide="microscope" class="w-4 h-4 text-emerald-500"></i>
+          </span>
+        </div>
+        <div class="relative w-full">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <input type="text" id="bio-search-input" class="flyout-search-input w-full pr-8 pl-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 placeholder:text-gray-400" placeholder="ابحث عن أداة..." data-subject="biology">
+        </div>
+      </div>
+
+      <div id="bio-categories-accordion" class="flex flex-col gap-1 mt-1">
+
+        <!-- الفئة الجديدة: نماذج تفاعلية متحركة -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-violet-50 dark:bg-violet-900/40 hover:bg-violet-100 dark:hover:bg-violet-900/60 text-xs font-bold text-violet-700 dark:text-violet-200 transition-colors cursor-pointer" aria-expanded="true">
+            <span class="flex items-center gap-1.5"><i data-lucide="chevron-down" class="w-3.5 h-3.5 text-violet-400 transition-transform duration-200 chevron-icon rotate-180"></i> نماذج تفاعلية متحركة ✨</span>
+            <i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5 text-violet-500"></i>
+          </button>
+          <div class="category-content flex flex-col gap-0.5 pt-1 pr-1">
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-violet-100 dark:hover:bg-violet-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.cell-animal-interactive' title="خلية حيوانية تفاعلية (تمرير الفأرة)"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-rose-500 shrink-0' data-lucide='circle'></i><span class="font-medium truncate">خلية حيوانية (تفاعلية)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-violet-100 dark:hover:bg-violet-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.plant-cell-3d-animated' title="الخلية النباتية 3D (انسياب هيولي وتوهج الصانعات)"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-emerald-500 shrink-0' data-lucide='sparkles'></i><span class="font-medium truncate">الخلية النباتية 3D (متحركة)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-violet-100 dark:hover:bg-violet-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.digestive-interactive' title="الجهاز الهضمي التفاعلي"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-orange-600 shrink-0' data-lucide='git-merge'></i><span class="font-medium truncate">الجهاز الهضمي (تفاعلي)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-violet-100 dark:hover:bg-violet-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.blood-exchange-animated' title="المبادلات الخلوية المتحركة"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-blue-500 shrink-0' data-lucide='repeat'></i><span class="font-medium truncate">المبادلات الخلوية (متحركة)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-violet-100 dark:hover:bg-violet-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.circulation-animated' title="الدورة الدموية المتحركة"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-red-500 shrink-0' data-lucide='git-compare'></i><span class="font-medium truncate">الدورة الدموية (متحركة)</span></div></button>
+          </div>
+        </div>
+
+
+        <!-- الفئة A: الخلية والعضيات الخلوية -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-200 transition-colors cursor-pointer" aria-expanded="true">
+            <span class="flex items-center gap-1.5"><i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 chevron-icon rotate-180"></i> A — الخلية والعضيات الخلوية</span>
+            <i data-lucide="circle-dot" class="w-3.5 h-3.5 text-emerald-500"></i>
+          </button>
+          <div class="category-content flex flex-col gap-0.5 pt-1 pr-1">
+            
+            
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.cell-animal-detailed' title="خلية حيوانية"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-rose-500 shrink-0' data-lucide='circle'></i><span class="font-medium truncate">خلية حيوانية</span></div></button>
+                        <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 text-xs w-full cursor-pointer border border-emerald-300 dark:border-emerald-700/50 bg-emerald-50/50' data-edu-type='biology.plant-cell-realistic' title="الخلية النباتية 3D الواقعية مع العضيات الحية والانسياب السيتوبلازمي"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-emerald-600 shrink-0' data-lucide='leaf'></i><span class="font-bold truncate">الخلية النباتية (3D متحرك)</span></div><span class="text-[10px] bg-emerald-600 text-white px-1.5 py-0.5 rounded font-bold">3D</span></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-orange-100 dark:hover:bg-orange-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-orange-300 dark:border-orange-700/50 bg-orange-50/50' data-edu-type='biology.digestive-system-realistic' title="الجهاز الهضمي 3D الواقعي مع محاكاة تدفق الغذاء وحركة التمعج والإنزيمات والامتصاص"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-orange-600 shrink-0' data-lucide='sparkles'></i><span class="font-bold truncate text-orange-700 dark:text-orange-300">الجهاز الهضمي 3D (واقعي متحرك) ✨</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.cell-plant-detailed' title="خلية نباتية"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-emerald-500 shrink-0' data-lucide='hexagon'></i><span class="font-medium truncate">خلية نباتية</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.cell-bacteria' title="خلية بكتيرية"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-lime-600 shrink-0' data-lucide='bug'></i><span class="font-medium truncate">خلية بكتيرية</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.membrane-fluid-mosaic' title="غشاء هيولي (فسيفساني مائع)"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-cyan-500 shrink-0' data-lucide='layers'></i><span class="font-medium truncate">غشاء هيولي (فسيفساني مائع)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.stomata' title="الثغر الورقي (آلية المبادلات)"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-teal-600 shrink-0' data-lucide='eye'></i><span class="font-medium truncate">الثغر الورقي (آلية المبادلات)</span></div></button>
+          </div>
+        </div>
+
+        <!-- الفئة B: الوراثة والبيولوجيا الجزيئية -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-200 transition-colors cursor-pointer" aria-expanded="false">
+            <span class="flex items-center gap-1.5"><i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 chevron-icon"></i> B — الوراثة والبيولوجيا الجزيئية</span>
+            <i data-lucide="dna" class="w-3.5 h-3.5 text-blue-500"></i>
+          </button>
+          <div class="category-content hidden flex-col gap-0.5 pt-1 pr-1">
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.dna-structure' title="الحلزون المزدوج للحمض النووي DNA"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-blue-500 shrink-0' data-lucide='dna'></i><span class="font-medium truncate">الحلزون المزدوج DNA</span></div></button>
+          </div>
+        </div>
+
+        <!-- الفئة C: أجهزة الجسم والوظائف الحيوية -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-200 transition-colors cursor-pointer" aria-expanded="false">
+            <span class="flex items-center gap-1.5"><i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 chevron-icon"></i> C — أجهزة الجسم والوظائف الحيوية</span>
+            <i data-lucide="activity" class="w-3.5 h-3.5 text-red-500"></i>
+          </button>
+          <div class="category-content hidden flex-col gap-0.5 pt-1 pr-1">
+                        <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-cyan-50 dark:hover:bg-cyan-900/30 text-cyan-800 dark:text-cyan-200 text-xs w-full cursor-pointer border border-cyan-300 dark:border-cyan-700/50 bg-cyan-50/50' data-edu-type='biology.human-body-organs-realistic' title="المجسم البشري 3D الواقعي مع الأعضاء الحية والتنفس/الهضم المتحرك"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-cyan-600 shrink-0' data-lucide='activity'></i><span class="font-bold truncate">تشريح الجسم البشري (3D متحرك)</span></div><span class="text-[10px] bg-cyan-600 text-white px-1.5 py-0.5 rounded font-bold">3D</span></button>
+<button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-orange-100 dark:hover:bg-orange-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-orange-300 dark:border-orange-700/50 bg-orange-50/50' data-edu-type='biology.digestive-system-realistic' title="الجهاز الهضمي 3D الواقعي مع محاكاة تدفق الغذاء وحركة التمعج والإنزيمات والامتصاص"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-orange-600 shrink-0' data-lucide='sparkles'></i><span class="font-bold truncate text-orange-700 dark:text-orange-300">الجهاز الهضمي 3D (واقعي متحرك) ✨</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.digestive-system-pro' title="الجهاز الهضمي"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-orange-600 shrink-0' data-lucide='git-merge'></i><span class="font-medium truncate">الجهاز الهضمي (Pro)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.villus-pro' title="الزغابة المعوية"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-rose-500 shrink-0' data-lucide='git-commit'></i><span class="font-medium truncate">الزغابة المعوية (Pro)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.blood-exchange-pro' title="المبادلات الخلوية"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-blue-500 shrink-0' data-lucide='repeat'></i><span class="font-medium truncate">المبادلات الخلوية (Pro)</span></div></button>
+
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.human-heart-detailed' title="القلب البشري"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-red-600 shrink-0' data-lucide='heart'></i><span class="font-medium truncate">القلب البشري (3D)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.neuron-detailed' title="الخلية العصبية"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-purple-500 shrink-0' data-lucide='zap'></i><span class="font-medium truncate">الخلية العصبية (3D)</span></div></button>
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.human-eye-detailed' title="العين البشرية والرؤية"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-blue-500 shrink-0' data-lucide='eye'></i><span class="font-medium truncate">العين ومستقبلات الرؤية (3D)</span></div></button>
+            
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.blood-circulation-pro' title="الدورة الدموية الكبرى والصغرى"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-red-500 shrink-0' data-lucide='git-compare'></i><span class="font-medium truncate">الدورة الدموية (Pro)</span></div></button>
+
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.human-ear-detailed' title="الأذن البشرية والسمع"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-amber-600 shrink-0' data-lucide='ear'></i><span class="font-medium truncate">الأذن والجهاز السمعي (3D)</span></div></button>
+          </div>
+        </div>
+
+        <!-- الفئة D: التركيب الضوئي والتنفس الخلوي -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-200 transition-colors cursor-pointer" aria-expanded="false">
+            <span class="flex items-center gap-1.5"><i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 chevron-icon"></i> D — التركيب الضوئي والتنفس الخلوي</span>
+            <i data-lucide="sun" class="w-3.5 h-3.5 text-amber-500"></i>
+          </button>
+          <div class="category-content hidden flex-col gap-0.5 pt-1 pr-1">
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.photosynthesis' title="معادلة التركيب الضوئي"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-green-600 shrink-0' data-lucide='leaf'></i><span class="font-medium truncate">التركيب الضوئي</span></div></button>
+          </div>
+        </div>
+
+        
+        <!-- الفئة F: الجيولوجيا وعلوم الأرض -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-200 transition-colors cursor-pointer" aria-expanded="true">
+            <span class="flex items-center gap-1.5"><i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 chevron-icon rotate-180"></i> F — الجيولوجيا وعلوم الأرض</span>
+            <i data-lucide="globe" class="w-3.5 h-3.5 text-amber-700"></i>
+          </button>
+          <div class="category-content flex flex-col gap-0.5 pt-1 pr-1">
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.earth-layers-pro' title="طبقات الأرض (البنية الداخلية)"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-orange-500 shrink-0' data-lucide='layers'></i><span class="font-medium truncate">طبقات الأرض (Pro)</span></div></button>
+          </div>
+        </div>
+
+        <!-- الفئة E: البيئة والدورات البيوكيميائية -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-200 transition-colors cursor-pointer" aria-expanded="false">
+            <span class="flex items-center gap-1.5"><i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 chevron-icon"></i> E — البيئة والدورات البيوكيميائية</span>
+            <i data-lucide="recycle" class="w-3.5 h-3.5 text-teal-500"></i>
+          </button>
+          <div class="category-content hidden flex-col gap-0.5 pt-1 pr-1">
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.food-chain' title="السلسلة الغذائية"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-amber-600 shrink-0' data-lucide='sprout'></i><span class="font-medium truncate">السلسلة الغذائية</span></div></button>
+          </div>
+        </div>
+
+        <!-- الفئة F: الأحياء الدقيقة وعلم المناعة -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-200 transition-colors cursor-pointer" aria-expanded="false">
+            <span class="flex items-center gap-1.5"><i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 chevron-icon"></i> F — الأحياء الدقيقة وعلم المناعة</span>
+            <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-purple-500"></i>
+          </button>
+          <div class="category-content hidden flex-col gap-0.5 pt-1 pr-1">
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.virus-structure' title="تركيب الفيروس"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-red-500 shrink-0' data-lucide='shield-alert'></i><span class="font-medium truncate">تركيب الفيروس</span></div></button>
+          </div>
+        </div>
+
+        <!-- الفئة G: الكيمياء الحيوية وبنية البروتينات -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-200 transition-colors cursor-pointer" aria-expanded="false">
+            <span class="flex items-center gap-1.5"><i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 chevron-icon"></i> G — الكيمياء الحيوية وبنية البروتينات</span>
+            <i data-lucide="hexagon" class="w-3.5 h-3.5 text-indigo-500"></i>
+          </button>
+          <div class="category-content hidden flex-col gap-0.5 pt-1 pr-1">
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.protein-structure' title="بنية البروتين"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-indigo-500 shrink-0' data-lucide='hexagon'></i><span class="font-medium truncate">بنية البروتين</span></div></button>
+          </div>
+        </div>
+
+        <!-- الفئة H: أدوات التجارب والتركيبات المخبرية -->
+        <div class="category-group">
+          <button type="button" class="category-toggle-btn w-full p-2 rounded-xl flex items-center justify-between bg-gray-50 dark:bg-gray-800/60 hover:bg-gray-100 dark:hover:bg-gray-800 text-xs font-bold text-gray-700 dark:text-gray-200 transition-colors cursor-pointer" aria-expanded="false">
+            <span class="flex items-center gap-1.5"><i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400 transition-transform duration-200 chevron-icon"></i> H — أدوات التجارب والتركيبات المخبرية</span>
+            <i data-lucide="flask-conical" class="w-3.5 h-3.5 text-cyan-600"></i>
+          </button>
+          <div class="category-content hidden flex-col gap-0.5 pt-1 pr-1">
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='science.microscope' title="مجهر ضوئي"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-slate-600 shrink-0' data-lucide='microscope'></i><span class="font-medium truncate">مجهر ضوئي</span></div></button>
+            
+            <button class='edu-add-btn p-1.5 rounded-lg flex items-center justify-between hover:bg-emerald-50 dark:hover:bg-emerald-900/30 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer' data-edu-type='biology.volcano-pro' title="البركان والمقذوفات"><div class="flex items-center gap-2 truncate"><i class='w-3.5 h-3.5 text-red-600 shrink-0' data-lucide='mountain-snow'></i><span class="font-medium truncate">البركان (Pro)</span></div></button>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Geography Dropdown Popover -->
+    <div id="geo-dropdown" class="hidden flex-col gap-1.5 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl p-3 w-80 max-h-[85vh] overflow-y-auto border border-gray-200 dark:border-gray-800 shadow-2xl custom-scrollbar z-[70] fixed text-right font-sans" dir="rtl">
+      <div class="sticky top-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-10 pb-1.5 border-b border-gray-100 dark:border-gray-800">
+        <div class="flex items-center justify-between mb-1.5 px-1">
+          <span class="text-xs font-bold text-gray-800 dark:text-gray-100 flex items-center gap-1.5">
+            <i data-lucide="globe" class="w-4 h-4 text-blue-600"></i>
+            الجغرافيا والخرائط التفاعلية
+          </span>
+          <span class="text-[10px] bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 px-2 py-0.5 rounded-full font-semibold">اجتماعيات</span>
+        </div>
+        <div class="relative w-full">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <input type="text" id="geo-search-input" class="flyout-search-input w-full pr-8 pl-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400" placeholder="بحث في أدوات الجغرافيا والخرائط..." data-subject="geography">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-1 my-1">
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='geography.world-political-map' title="خريطة العالم السياسية"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-blue-500 shrink-0' data-lucide='globe'></i><span class="font-medium truncate">خريطة العالم</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='geography.algeria-political-map' title="خريطة الجزائر الإدارية (58 ولاية)"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-emerald-500 shrink-0' data-lucide='map'></i><span class="font-medium truncate">خريطة الجزائر</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='geography.palestine-map' title="خريطة فلسطين التاريخية"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-emerald-500 shrink-0' data-lucide='map-pin'></i><span class="font-medium truncate">خريطة فلسطين</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='geography.saudi-map' title="خريطة المملكة العربية السعودية"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-emerald-600 shrink-0' data-lucide='map'></i><span class="font-medium truncate">السعودية</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='geography.egypt-map' title="خريطة جمهورية مصر العربية"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-amber-600 shrink-0' data-lucide='map'></i><span class="font-medium truncate">خريطة مصر</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='geography.africa-blank-map' title="خريطة قارة إفريقيا الصماء"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-orange-500 shrink-0' data-lucide='globe-2'></i><span class="font-medium truncate">خريطة إفريقيا</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='geography.algeria-physical-map' title="خريطة تضاريس وطبوغرافيا الجزائر"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-amber-500 shrink-0' data-lucide='mountain'></i><span class="font-medium truncate">تضاريس الجزائر</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='geography.compass-rose' title="وردة الرياح وتحديد الاتجاهات"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-rose-500 shrink-0' data-lucide='compass'></i><span class="font-medium truncate">وردة الرياح</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='geography.coordinates-grid' title="شبكة خطوط الطول ودوائر العرض"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-sky-500 shrink-0' data-lucide='grid-3x3'></i><span class="font-medium truncate">شبكة الإحداثيات</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-blue-50 dark:hover:bg-blue-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='geography.ruler' title="مقياس الرسم الخطي"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-amber-500 shrink-0' data-lucide='ruler'></i><span class="font-medium truncate">مقياس الرسم</span></div></button>
+      </div>
+    </div>
+
+    <!-- Astronomy Dropdown Popover -->
+    <div id="astro-dropdown" class="hidden flex-col gap-1.5 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-2xl p-3 w-80 max-h-[85vh] overflow-y-auto border border-gray-200 dark:border-gray-800 shadow-2xl custom-scrollbar z-[70] fixed text-right font-sans" dir="rtl">
+      <div class="sticky top-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md z-10 pb-1.5 border-b border-gray-100 dark:border-gray-800">
+        <div class="flex items-center justify-between mb-1.5 px-1">
+          <span class="text-xs font-bold text-gray-800 dark:text-gray-100 flex items-center gap-1.5">
+            <i data-lucide="telescope" class="w-4 h-4 text-purple-600"></i>
+            الفلك وعلوم الفضاء
+          </span>
+          <span class="text-[10px] bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300 px-2 py-0.5 rounded-full font-semibold">فلك وفضاء</span>
+        </div>
+        <div class="relative w-full">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <input type="text" id="astro-search-input" class="flyout-search-input w-full pr-8 pl-3 py-1.5 text-xs bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-gray-400" placeholder="بحث في أدوات الفلك وعلوم الفضاء..." data-subject="astronomy">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-1 my-1">
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-purple-50 dark:hover:bg-purple-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='astronomy.moon-phases' title="أطوار القمر والمنازل القمرية"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-amber-400 shrink-0' data-lucide='moon'></i><span class="font-medium truncate">أطوار القمر</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-purple-50 dark:hover:bg-purple-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='astronomy.solar-system' title="المجموعة الشمسية والمدارات الكوكبية"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-amber-500 shrink-0' data-lucide='sun'></i><span class="font-medium truncate">المجموعة الشمسية</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-purple-50 dark:hover:bg-purple-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='astronomy.sky-map' title="خريطة القبة السماوية والنجوم"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-purple-500 shrink-0' data-lucide='sparkles'></i><span class="font-medium truncate">خريطة السماء</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-purple-50 dark:hover:bg-purple-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='astronomy.eclipses' title="محاكي الكسوف الشمسي والخسوف القمري"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-red-500 shrink-0' data-lucide='eye-off'></i><span class="font-medium truncate">الكسوف والخسوف</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-purple-50 dark:hover:bg-purple-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='astronomy.seasons-day-night' title="تعاقب الفصول الأربعة والليل والنهار"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-sky-500 shrink-0' data-lucide='orbit'></i><span class="font-medium truncate">الفصول والليل والنهار</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-purple-50 dark:hover:bg-purple-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='astronomy.celestial-compass' title="البوصلة والإحداثيات الفلكية"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-indigo-500 shrink-0' data-lucide='compass'></i><span class="font-medium truncate">البوصلة الفلكية</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-purple-50 dark:hover:bg-purple-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='astronomy.constellations' title="الأبراج والمجموعات النجمية"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-teal-500 shrink-0' data-lucide='star'></i><span class="font-medium truncate">المجموعات النجمية</span></div></button>
+        <button class='edu-add-btn p-1.5 rounded-xl flex items-center justify-between hover:bg-purple-50 dark:hover:bg-purple-900/40 text-gray-700 dark:text-gray-200 text-xs w-full cursor-pointer border border-gray-100 dark:border-gray-800/60' data-edu-type='astronomy.info-card' title="بطاقة البيانات الفيزيائية للكواكب"><div class="flex items-center gap-1.5 truncate"><i class='w-3.5 h-3.5 text-blue-500 shrink-0' data-lucide='file-text'></i><span class="font-medium truncate">بيانات الكواكب</span></div></button>
+      </div>
+    </div>
+
+    <!-- Focus/Spotlight Mask Canvas -->
+    <canvas id="focus-canvas" class="absolute inset-0 z-45 hidden pointer-events-auto" style="display:none"></canvas>
+  </div>
+
+  <!-- Keyboard Shortcuts Modal -->
+  <div id="shortcuts-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[100] backdrop-blur-sm" dir="rtl">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-md w-[92%] border border-gray-100 dark:border-gray-700 transform transition-all text-right">
+      <div class="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-700 mb-4">
+        <div class="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+          <i data-lucide="keyboard" class="w-6 h-6"></i>
+          <h2 class="text-xl font-bold text-gray-800 dark:text-white">اختصارات لوحة المفاتيح</h2>
+        </div>
+        <button id="btn-close-shortcuts" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 text-xs mb-6 max-h-[60vh] overflow-y-auto">
+        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"><span class="font-bold">تراجع</span><kbd class="px-2 py-0.5 bg-white dark:bg-gray-800 border rounded font-mono" dir="ltr">Ctrl + Z</kbd></div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"><span class="font-bold">إعادة</span><kbd class="px-2 py-0.5 bg-white dark:bg-gray-800 border rounded font-mono" dir="ltr">Ctrl + Y</kbd></div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"><span class="font-bold">القلم</span><kbd class="px-2 py-0.5 bg-white dark:bg-gray-800 border rounded font-mono" dir="ltr">P</kbd></div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"><span class="font-bold">الممحاة</span><kbd class="px-2 py-0.5 bg-white dark:bg-gray-800 border rounded font-mono" dir="ltr">E</kbd></div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"><span class="font-bold">تظليل</span><kbd class="px-2 py-0.5 bg-white dark:bg-gray-800 border rounded font-mono" dir="ltr">H</kbd></div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"><span class="font-bold">المؤشر الليزري</span><kbd class="px-2 py-0.5 bg-white dark:bg-gray-800 border rounded font-mono" dir="ltr">L</kbd></div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"><span class="font-bold">تحديد وتحريك</span><kbd class="px-2 py-0.5 bg-white dark:bg-gray-800 border rounded font-mono" dir="ltr">S</kbd></div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"><span class="font-bold">تحريك اللوحة</span><kbd class="px-2 py-0.5 bg-white dark:bg-gray-800 border rounded font-mono" dir="ltr">Space</kbd></div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"><span class="font-bold">إدراج نص</span><kbd class="px-2 py-0.5 bg-white dark:bg-gray-800 border rounded font-mono" dir="ltr">T</kbd></div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"><span class="font-bold">معادلة LaTeX</span><kbd class="px-2 py-0.5 bg-white dark:bg-gray-800 border rounded font-mono" dir="ltr">M</kbd></div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"><span class="font-bold">ملء الشاشة</span><kbd class="px-2 py-0.5 bg-white dark:bg-gray-800 border rounded font-mono" dir="ltr">F11</kbd></div>
+        <div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700/50 rounded-lg"><span class="font-bold">حذف العنصر</span><kbd class="px-2 py-0.5 bg-white dark:bg-gray-800 border rounded font-mono" dir="ltr">Delete</kbd></div>
+      </div>
+
+      <button id="btn-close-shortcuts-2" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-colors text-sm cursor-pointer">
+        حسناً، فهمت
+      </button>
+    </div>
+  </div>
+
+  <!-- About Modal -->
+  <div id="about-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-[100] backdrop-blur-sm" dir="rtl">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 max-w-sm w-full text-center border border-gray-100 dark:border-gray-700 transform transition-all">
+      <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/50 rounded-full flex items-center justify-center mx-auto mb-3 text-blue-600 dark:text-blue-400 shadow-inner">
+        <i data-lucide="award" class="w-8 h-8"></i>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-1">السبورة الذكية Pro</h2>
+      <div class="flex items-center justify-center gap-2 mb-4">
+        <span id="about-app-version" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+          v6.6.7.0 Pro Edition
+        </span>
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+          مفعلة مدى الحياة
+        </span>
+      </div>
+      
+      <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-3 mb-3">
+        <p class="text-xs text-gray-500 dark:text-gray-400 mb-0.5">المؤلف والمطور</p>
+        <p class="text-base font-bold text-gray-900 dark:text-white">Dihem Abdellatif</p>
+      </div>
+
+      <div class="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800 rounded-xl p-2.5 mb-3 text-emerald-800 dark:text-emerald-300 text-xs flex items-center justify-between">
+        <span class="font-bold flex items-center gap-1.5"><i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i> حالة الترخيص:</span>
+        <span id="about-license-status" class="font-bold font-mono">مفعل مدى الحياة</span>
+      </div>
+
+      <button id="btn-open-activation" class="w-full mb-2.5 py-2 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5 border border-indigo-200 dark:border-indigo-800">
+        <i data-lucide="key-round" class="w-3.5 h-3.5"></i>
+        <span>إدارة / إدخال مفتاح التفعيل</span>
+      </button>
+
+      <!-- Check Updates Button & Status -->
+      <div class="mb-2.5 flex flex-col gap-1.5">
+        <button id="btn-check-updates" type="button" class="w-full py-2 bg-slate-100 dark:bg-slate-700/60 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-1.5 border border-slate-200 dark:border-slate-600">
+          <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+          <span>التحقق من وجود تحديثات</span>
+        </button>
+        <span id="update-check-status-badge" class="text-[11px] text-slate-500 dark:text-slate-400"></span>
+      </div>
+
+      <button id="btn-close-about" class="w-full py-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-xs font-bold transition-colors cursor-pointer">
+        إغلاق
+      </button>
+    </div>
+  </div>
+
+  <!-- Update Notification Modal -->
+  <div id="update-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] hidden items-center justify-center p-4" dir="rtl">
+    <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-800 w-full max-w-sm overflow-hidden p-6 flex flex-col gap-4 text-center">
+      <div class="w-14 h-14 bg-amber-50 dark:bg-amber-950/50 rounded-2xl flex items-center justify-center mx-auto text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+        <i data-lucide="sparkles" class="w-7 h-7"></i>
+      </div>
+      <div>
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white">تحديث جديد متوفر!</h3>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">يتوفر إصدار جديد من السبورة الذكية Pro</p>
+      </div>
+      <div class="flex items-center justify-center gap-3 bg-gray-50 dark:bg-gray-800/60 rounded-xl p-2.5 text-xs">
+        <div>
+          <span class="text-gray-400 block text-[10px]">الإصدار الحالي</span>
+          <span id="update-modal-cur-ver" class="font-mono font-bold text-gray-700 dark:text-gray-300"></span>
+        </div>
+        <i data-lucide="arrow-left" class="w-4 h-4 text-blue-500"></i>
+        <div>
+          <span class="text-emerald-500 block text-[10px] font-bold">الإصدار الجديد</span>
+          <span id="update-modal-new-ver" class="font-mono font-bold text-emerald-600 dark:text-emerald-400"></span>
+        </div>
+      </div>
+      <ul id="update-modal-changelog" class="text-right text-xs text-gray-600 dark:text-gray-300 space-y-1 list-disc list-inside max-h-32 overflow-y-auto bg-gray-50 dark:bg-gray-800/40 p-2.5 rounded-xl"></ul>
+      <div class="flex items-center gap-2 mt-1">
+        <a href="https://apps.microsoft.com" target="_blank" rel="noopener noreferrer" class="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-lg shadow-blue-500/20">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i>
+          <span>تحديث الآن عبر المتجر</span>
+        </a>
+        <button id="btn-close-update-modal" type="button" class="py-2.5 px-4 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-bold rounded-xl transition-colors cursor-pointer">
+          لاحقاً
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Teacher Profile & Camera Settings Modal -->
+  <div id="teacher-profile-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4" dir="rtl">
+    <div class="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-800 w-full max-w-md overflow-hidden transform transition-all scale-100 p-6 flex flex-col gap-5">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 bg-indigo-50 dark:bg-indigo-900/40 rounded-xl text-indigo-600 dark:text-indigo-400 shrink-0">
+            <i data-lucide="user-cog" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-gray-900 dark:text-gray-100">إعدادات بروفايل الأستاذ</h3>
+            <p class="text-[11px] text-gray-500 dark:text-gray-400">تخصيص الاسم، الصورة الشخصية، والكاميرا المدمجة</p>
+          </div>
+        </div>
+        <button id="btn-close-teacher-modal" class="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Avatar Preview & Upload Area -->
+      <div class="flex flex-col items-center gap-3 py-1">
+        <div class="relative group">
+          <!-- Big Circle Avatar Frame -->
+          <div class="w-24 h-24 rounded-full p-[3px] bg-gradient-to-tr from-indigo-500 via-purple-500 to-blue-500 shadow-xl overflow-hidden relative">
+            <div class="w-full h-full rounded-full overflow-hidden bg-indigo-50 dark:bg-indigo-950 flex items-center justify-center relative">
+              <img id="modal-teacher-img" src="" class="w-full h-full object-cover hidden" alt="صورة المعلم">
+              <div id="modal-teacher-placeholder" class="text-indigo-500 dark:text-indigo-400">
+                <i data-lucide="user" class="w-10 h-10"></i>
+              </div>
+              <video id="modal-teacher-webcam" class="w-full h-full object-cover hidden" autoplay playsinline muted></video>
+            </div>
+          </div>
+
+          <!-- Upload Button Badge -->
+          <label for="teacher-img-file-input" class="absolute bottom-0 left-0 bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-full shadow-lg cursor-pointer transition-transform hover:scale-110 border-2 border-white dark:border-gray-900" title="رفع صورة جديدة">
+            <i data-lucide="camera" class="w-4 h-4"></i>
+          </label>
+          <input type="file" id="teacher-img-file-input" accept="image/*" class="hidden">
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-2 mt-1">
+          <button id="btn-trigger-upload" class="px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+            <span>رفع صورة جديدة</span>
+          </button>
+          <button id="btn-toggle-webcam" class="px-3 py-1.5 bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/50 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="video" class="w-3.5 h-3.5"></i>
+            <span id="webcam-btn-text">تشغيل الكاميرا المباشرة</span>
+          </button>
+          <button id="btn-remove-teacher-img" class="px-2.5 py-1.5 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/50 text-xs font-bold rounded-xl transition-colors flex items-center gap-1 cursor-pointer hidden" title="إزالة الصورة">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Inputs -->
+      <div class="flex flex-col gap-3">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">اسم الأستاذ / المعلم</label>
+          <input type="text" id="input-teacher-name" value="أ. ديهم عبد اللطيف" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-indigo-500 outline-none font-bold">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">الوصف الفرعي / المادة</label>
+          <input type="text" id="input-teacher-sub" value="كاميرا المعلم المدمجة" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-indigo-500 outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1.5">حجم البروفايل والكاميرا على الشاشة</label>
+          <div class="grid grid-cols-4 gap-2" id="teacher-size-presets">
+            <button type="button" data-scale="1" class="teacher-size-btn px-2 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs font-bold hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all flex flex-col items-center gap-0.5 cursor-pointer">
+              <span>1x</span>
+              <span class="text-[9px] text-gray-500 dark:text-gray-400 font-normal">صغير</span>
+            </button>
+            <button type="button" data-scale="1.3" class="teacher-size-btn px-2 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs font-bold hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all flex flex-col items-center gap-0.5 cursor-pointer">
+              <span>1.3x</span>
+              <span class="text-[9px] text-gray-500 dark:text-gray-400 font-normal">متوسط</span>
+            </button>
+            <button type="button" data-scale="1.6" class="teacher-size-btn px-2 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs font-bold hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all flex flex-col items-center gap-0.5 cursor-pointer">
+              <span>1.6x</span>
+              <span class="text-[9px] text-gray-500 dark:text-gray-400 font-normal">كبير</span>
+            </button>
+            <button type="button" data-scale="2" class="teacher-size-btn px-2 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-xs font-bold hover:bg-indigo-50 dark:hover:bg-indigo-900/30 transition-all flex flex-col items-center gap-0.5 cursor-pointer">
+              <span>2x</span>
+              <span class="text-[9px] text-gray-500 dark:text-gray-400 font-normal">ضخم</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Actions -->
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-gray-100 dark:border-gray-800">
+        <button id="btn-save-teacher-profile" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition-all shadow-md hover:shadow-lg flex items-center gap-2 cursor-pointer">
+          <i data-lucide="check" class="w-4 h-4"></i>
+          <span>حفظ التغييرات</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
