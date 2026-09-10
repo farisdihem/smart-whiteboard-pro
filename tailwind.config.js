@@ -6,6 +6,7 @@ module.exports = {
     './*.js',
     './src/**/*.js',
     './data/**/*.js',
+    '!./data/geography_geojson_data.js',
   ],
   theme: {
     extend: {
